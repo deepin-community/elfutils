@@ -4,103 +4,66 @@ set -e
 
 . /usr/share/debconf/confmodule
 
-CONFTEMPLATEPATH="/usr/share/libdebuginfod-common"
+readonly CONFTEMPLATEPATH="/usr/share/libdebuginfod-common"
 
-# Change a "generic" shell file according to enable/disable
-# DEBUGINFOD_URLS according.
-#
-# - $1 is the shell file name
-#
-# - $2 is the pattern that we will look for when changing the file.
-#   This pattern will also be used to perform the substitution.
-#
-# - $3 is the action we will perform: set the DEBUGINFOD_URLS
-#   variable, or unset it.
-#
-# By the end of it, the specified shell file will have an extra line
-# which either sets DEBUGINFOD_URLS to have its own value, or sets
-# DEBUGINFOD_URLS to be empty (i.e., unsets any value).
-change_shell_file ()
+configure_debuginfod_debian()
 {
-    file="$1"
-    pattern="$2"
+    local RET="false"
 
-    if [ "$3" = "set" ]; then
-	finalvar='$DEBUGINFOD_URLS'
-    else
-	finalvar=""
-    fi
+    db_get libdebuginfod/usedebiandebuginfod || RET="false"
 
-    # Check whether the last line of the file already starts with
-    # ${pattern}.  If it does, then we will perform a sed to replace
-    # it according to the action specified.  Otherwise, we will append
-    # a last line containing the set/unset.
-    if tail -n1 "$file" | grep -q "^$pattern"; then
-	sed -i "\$s@${pattern}.*@${pattern}\"${finalvar}\"@" "${file}"
-    else
-	echo "${pattern}\"${finalvar}\"" >> "${file}"
-    fi
+    for ext in sh csh; do
+	[ -f "${CONFTEMPLATEPATH}/debuginfod.${ext}" ] || continue
+
+	if [ "$RET" = "true" ]; then
+	    UCF_FORCE_CONFMISS=1 ucf --three-way --debconf-ok \
+		"${CONFTEMPLATEPATH}/debuginfod.${ext}" \
+		"/etc/profile.d/debuginfod.${ext}"
+	    ucfr libdebuginfod-common "/etc/profile.d/debuginfod.${ext}"
+	    chmod 0644 "/etc/profile.d/debuginfod.${ext}"
+	else
+	    rm -f "/etc/profile.d/debuginfod.${ext}"
+	fi
+    done
 }
 
-# Change the .sh file according to an action specified by $1.  It can
-# be either "set" (meaning that we will be setting DEBUGINFOD_URLS to
-# a valid value), or "unset" (which means that DEBUGINFOD_URLS will be
-# empty).
-change_sh_file ()
+configure_debuginfod_ubuntu()
 {
-    shfile="$1"
-    shaction="$2"
+    local -r OLDVER="$1"
 
-    change_shell_file \
-	"$shfile" \
-	"export DEBUGINFOD_URLS=" \
-	"$shaction"
+    # Handle previous versions where the debuginfod configuration was
+    # optional.
+    if dpkg --compare-versions "${OLDVER}" le-nl "0.187-3"; then
+	for ext in sh csh; do
+	    ucf --purge "/etc/profile.d/debuginfod.${ext}"
+	    ucfr --purge libdebuginfod-common "/etc/profile.d/debuginfod.${ext}"
+
+	    rm -f "/etc/profile.d/debuginfod.${ext}"
+	done
+    fi
+
+    for ext in sh csh; do
+	[ -e "/etc/profile.d/debuginfod.${ext}" ] && continue
+
+	ln -s "${CONFTEMPLATEPATH}/debuginfod.${ext}" \
+	   "/etc/profile.d/debuginfod.${ext}"
+    done
 }
 
-# Change the .csh file according to an action specified by $1.  The
-# explanation for change_sh_file also applies here.
-change_csh_file ()
+configure_debuginfod()
 {
-    cshfile="$1"
-    cshaction="$2"
+    local -r OLDVER="$1"
 
-    change_shell_file \
-	"$cshfile" \
-	"setenv DEBUGINFOD_URLS " \
-	"$cshaction"
+    if grep -qFx "ID=debian" /etc/os-release; then
+	configure_debuginfod_debian "${OLDVER}"
+    elif grep -qFx "ID=ubuntu" /etc/os-release; then
+	configure_debuginfod_ubuntu "${OLDVER}"
+    fi
 }
 
 case "$1" in
     configure)
-	GOT_DEBCONF_ANSWER=0
-
-	for ext in sh csh; do
-	    if [ -f "${CONFTEMPLATEPATH}"/debuginfod."${ext}" ]; then
-		if [ "$GOT_DEBCONF_ANSWER" -eq 0 ]; then
-		    RET="false"
-		    if grep -qFx "ID=debian" /etc/os-release; then
-			db_get libdebuginfod/usedebiandebuginfod || RET="false"
-		    fi
-
-		    if [ "$RET" = "true" ]; then
-			action="set"
-		    else
-			action="unset"
-		    fi
-		    GOT_DEBCONF_ANSWER=1
-		fi
-
-		tmpfile=$(mktemp)
-		cat "${CONFTEMPLATEPATH}"/debuginfod."${ext}" > "$tmpfile"
-		change_"${ext}"_file "$tmpfile" "$action"
-
-		ucf --three-way --debconf-ok \
-		    "$tmpfile" \
-		    /etc/profile.d/debuginfod."${ext}"
-		ucfr libdebuginfod-common /etc/profile.d/debuginfod."${ext}"
-		rm -f "${tmpfile}"
-	    fi
-	done
+	configure_debuginfod "$2"
 	;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

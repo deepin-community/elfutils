@@ -1,1 +1,3 @@
-usr/etc/profile.d/debuginfod.* usr/share/libdebuginfod-common/
+etc/profile.d/debuginfod.* usr/share/libdebuginfod-common/
+usr/share/man/man7/debuginfod-client-config.7
+etc/debuginfod/elfutils.urls etc/debuginfod/

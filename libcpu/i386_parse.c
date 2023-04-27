@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -46,10 +46,10 @@
    USER NAME SPACE" below.  */
 
 /* Identify Bison output, and Bison version.  */
-#define YYBISON 30706
+#define YYBISON 30802
 
 /* Bison version string.  */
-#define YYBISON_VERSION "3.7.6"
+#define YYBISON_VERSION "3.8.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -112,7 +112,6 @@
 #include <ctype.h>
 #include <errno.h>
 #include <inttypes.h>
-#include <libintl.h>
 #include <math.h>
 #include <obstack.h>
 #include <search.h>
@@ -289,7 +288,7 @@ extern FILE *outfile;
 static size_t best_mnemonic_bits;
 #endif
 
-#line 293 "i386_parse.c"
+#line 292 "i386_parse.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -366,7 +365,7 @@ extern int i386_debug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 216 "i386_parse.y"
+#line 215 "i386_parse.y"
 
   unsigned long int num;
   char *str;
@@ -376,7 +375,7 @@ union YYSTYPE
   struct argname *name;
   struct argument *arg;
 
-#line 380 "i386_parse.c"
+#line 379 "i386_parse.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -387,7 +386,9 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE i386_lval;
 
+
 int i386_parse (void);
+
 
 #endif /* !YY_I386_I_PARSE_H_INCLUDED  */
 /* Symbol kind.  */
@@ -583,12 +584,18 @@ typedef int yy_state_fast_t;
 # define YY_USE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                            \
+#if defined __GNUC__ && ! defined __ICC && 406 <= __GNUC__ * 100 + __GNUC_MINOR__
+# if __GNUC__ * 100 + __GNUC_MINOR__ < 407
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")
+# else
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
     _Pragma ("GCC diagnostic push")                                     \
     _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
     _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+# endif
 # define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
     _Pragma ("GCC diagnostic pop")
 #else
@@ -803,13 +810,13 @@ static const yytype_int8 yytranslate[] =
 };
 
 #if YYDEBUG
-  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+/* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   246,   246,   256,   257,   260,   262,   264,   266,   278,
-     281,   282,   285,   368,   371,   387,   390,   400,   407,   415,
-     419,   426,   433,   455,   458,   461,   471,   479,   487,   490,
-     522,   531,   538
+       0,   245,   245,   255,   256,   259,   261,   263,   265,   277,
+     280,   281,   284,   367,   370,   386,   389,   399,   406,   414,
+     418,   425,   432,   454,   457,   460,   470,   478,   486,   489,
+     521,   530,   537
 };
 #endif
 
@@ -839,16 +846,6 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#ifdef YYPRINT
-/* YYTOKNUM[NUM] -- (External) token number corresponding to the
-   (internal) symbol number NUM (which must be that of a token).  */
-static const yytype_int16 yytoknum[] =
-{
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,    10,    58,    44,    48,    49
-};
-#endif
-
 #define YYPACT_NINF (-35)
 
 #define yypact_value_is_default(Yyn) \
@@ -859,8 +856,8 @@ static const yytype_int16 yytoknum[] =
 #define yytable_value_is_error(Yyn) \
   0
 
-  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-     STATE-NUM.  */
+/* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+   STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
       12,     9,    10,    11,    13,    22,    -2,   -35,    16,   -35,
@@ -870,9 +867,9 @@ static const yytype_int8 yypact[] =
      -35,   -35,   -35,    21,    -6,   -35,    -6,   -35,    -6
 };
 
-  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
-     Performed when YYTABLE does not specify something else to do.  Zero
-     means the default is an error.  */
+/* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE does not specify something else to do.  Zero
+   means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
        9,     0,     0,     0,     0,     0,     0,     4,     0,     6,
@@ -882,23 +879,23 @@ static const yytype_int8 yydefact[] =
       29,    30,    32,    23,    26,    28,     0,    27,    25
 };
 
-  /* YYPGOTO[NTERM-NUM].  */
+/* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
      -35,   -35,   -35,    23,   -35,     2,    -1,   -35,     4,   -25,
      -35,   -35,   -15,   -34
 };
 
-  /* YYDEFGOTO[NTERM-NUM].  */
+/* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
        0,     5,     6,     7,    22,    23,    33,    24,    25,    26,
       38,    43,    44,    45
 };
 
-  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
-     positive, shift that token.  If negative, reduce the rule whose
-     number is the opposite.  If YYTABLE_NINF, syntax error.  */
+/* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+   positive, shift that token.  If negative, reduce the rule whose
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
       30,    39,    28,    29,    40,    41,    19,    13,    42,    30,
@@ -915,8 +912,8 @@ static const yytype_int8 yycheck[] =
       13,    46,    12,    29,    35,    -1,    15,    14
 };
 
-  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
-     symbol of state STATE-NUM.  */
+/* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
+   state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
        0,     3,     4,     5,     6,    19,    20,    21,    10,    10,
@@ -926,7 +923,7 @@ static const yytype_int8 yystos[] =
       10,    11,    14,    29,    30,    31,    15,    31,    30
 };
 
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+/* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
        0,    18,    19,    20,    20,    21,    21,    21,    21,    21,
@@ -935,7 +932,7 @@ static const yytype_int8 yyr1[] =
       31,    31,    31
 };
 
-  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+/* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     4,     3,     1,     3,     2,     2,     3,     0,
@@ -953,6 +950,7 @@ enum { YYENOMEM = -2 };
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
 #define YYERROR         goto yyerrorlab
+#define YYNOMEM         goto yyexhaustedlab
 
 
 #define YYRECOVERING()  (!!yyerrstatus)
@@ -993,10 +991,7 @@ do {                                            \
     YYFPRINTF Args;                             \
 } while (0)
 
-/* This macro is provided for backward compatibility. */
-# ifndef YY_LOCATION_PRINT
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
+
 
 
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
@@ -1023,10 +1018,6 @@ yy_symbol_value_print (FILE *yyo,
   YY_USE (yyoutput);
   if (!yyvaluep)
     return;
-# ifdef YYPRINT
-  if (yykind < YYNTOKENS)
-    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
-# endif
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YY_USE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
@@ -1211,6 +1202,7 @@ yyparse (void)
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yychar = YYEMPTY; /* Cause a token to be read.  */
+
   goto yysetstate;
 
 
@@ -1236,7 +1228,7 @@ yysetstate:
 
   if (yyss + yystacksize - 1 <= yyssp)
 #if !defined yyoverflow && !defined YYSTACK_RELOCATE
-    goto yyexhaustedlab;
+    YYNOMEM;
 #else
     {
       /* Get the current used size of the three stacks, in elements.  */
@@ -1264,7 +1256,7 @@ yysetstate:
 # else /* defined YYSTACK_RELOCATE */
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-        goto yyexhaustedlab;
+        YYNOMEM;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
         yystacksize = YYMAXDEPTH;
@@ -1275,7 +1267,7 @@ yysetstate:
           YY_CAST (union yyalloc *,
                    YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
         if (! yyptr)
-          goto yyexhaustedlab;
+          YYNOMEM;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
@@ -1296,6 +1288,7 @@ yysetstate:
         YYABORT;
     }
 #endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
+
 
   if (yystate == YYFINAL)
     YYACCEPT;
@@ -1409,7 +1402,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* spec: masks kPERCPERC '\n' instrs  */
-#line 247 "i386_parse.y"
+#line 246 "i386_parse.y"
                     {
 		      if (error_message_count != 0)
 			error (EXIT_FAILURE, 0,
@@ -1417,29 +1410,29 @@ yyreduce:
 
 		      instrtable_out ();
 		    }
-#line 1421 "i386_parse.c"
+#line 1414 "i386_parse.c"
     break;
 
   case 5: /* mask: kMASK kBITFIELD kNUMBER  */
-#line 261 "i386_parse.y"
+#line 260 "i386_parse.y"
                     { new_bitfield ((yyvsp[-1].str), (yyvsp[0].num)); }
-#line 1427 "i386_parse.c"
+#line 1420 "i386_parse.c"
     break;
 
   case 6: /* mask: kPREFIX kBITFIELD  */
-#line 263 "i386_parse.y"
+#line 262 "i386_parse.y"
                     { new_bitfield ((yyvsp[0].str), -1); }
-#line 1433 "i386_parse.c"
+#line 1426 "i386_parse.c"
     break;
 
   case 7: /* mask: kSUFFIX kBITFIELD  */
-#line 265 "i386_parse.y"
+#line 264 "i386_parse.y"
                     { new_bitfield ((yyvsp[0].str), -2); }
-#line 1439 "i386_parse.c"
+#line 1432 "i386_parse.c"
     break;
 
   case 8: /* mask: kSYNONYM kBITFIELD kBITFIELD  */
-#line 267 "i386_parse.y"
+#line 266 "i386_parse.y"
                     {
 		      struct synonym *newp = xmalloc (sizeof (*newp));
 		      newp->from = (yyvsp[-1].str);
@@ -1451,11 +1444,11 @@ yyreduce:
 		      else if (tsearch ( newp, &synonyms, compare_syn) == NULL)
 			error (EXIT_FAILURE, 0, "tsearch");
 		    }
-#line 1455 "i386_parse.c"
+#line 1448 "i386_parse.c"
     break;
 
   case 12: /* instr: bytes ':' bitfieldopt kID bitfieldopt optargs  */
-#line 286 "i386_parse.y"
+#line 285 "i386_parse.y"
                     {
 		      if ((yyvsp[-3].field) != NULL && strcmp ((yyvsp[-3].field)->name, "RE") != 0
 			  && strcmp ((yyvsp[-3].field)->name, "R") != 0)
@@ -1538,11 +1531,11 @@ yyreduce:
 			  ++ninstructions;
 			}
 		    }
-#line 1542 "i386_parse.c"
+#line 1535 "i386_parse.c"
     break;
 
   case 14: /* bitfieldopt: kBITFIELD  */
-#line 372 "i386_parse.y"
+#line 371 "i386_parse.y"
                     {
 		      struct known_bitfield search;
 		      search.name = (yyvsp[0].str);
@@ -1557,17 +1550,17 @@ yyreduce:
 		      else
 			(yyval.field) = *res;
 		    }
-#line 1561 "i386_parse.c"
+#line 1554 "i386_parse.c"
     break;
 
   case 15: /* bitfieldopt: %empty  */
-#line 387 "i386_parse.y"
+#line 386 "i386_parse.y"
                     { (yyval.field) = NULL; }
-#line 1567 "i386_parse.c"
+#line 1560 "i386_parse.c"
     break;
 
   case 16: /* bytes: bytes ',' byte  */
-#line 391 "i386_parse.y"
+#line 390 "i386_parse.y"
                     {
 		      check_bits ((yyvsp[0].bit));
 
@@ -1577,20 +1570,20 @@ yyreduce:
 		      runp->next = (yyvsp[0].bit);
 		      (yyval.bit) = (yyvsp[-2].bit);
 		    }
-#line 1581 "i386_parse.c"
+#line 1574 "i386_parse.c"
     break;
 
   case 17: /* bytes: byte  */
-#line 401 "i386_parse.y"
+#line 400 "i386_parse.y"
                     {
 		      check_bits ((yyvsp[0].bit));
 		      (yyval.bit) = (yyvsp[0].bit);
 		    }
-#line 1590 "i386_parse.c"
+#line 1583 "i386_parse.c"
     break;
 
   case 18: /* byte: byte bit  */
-#line 408 "i386_parse.y"
+#line 407 "i386_parse.y"
                     {
 		      struct bitvalue *runp = (yyvsp[-1].bit);
 		      while (runp->next != NULL)
@@ -1598,39 +1591,39 @@ yyreduce:
 		      runp->next = (yyvsp[0].bit);
 		      (yyval.bit) = (yyvsp[-1].bit);
 		    }
-#line 1602 "i386_parse.c"
+#line 1595 "i386_parse.c"
     break;
 
   case 19: /* byte: bit  */
-#line 416 "i386_parse.y"
+#line 415 "i386_parse.y"
                     { (yyval.bit) = (yyvsp[0].bit); }
-#line 1608 "i386_parse.c"
+#line 1601 "i386_parse.c"
     break;
 
   case 20: /* bit: '0'  */
-#line 420 "i386_parse.y"
+#line 419 "i386_parse.y"
                     {
 		      (yyval.bit) = xmalloc (sizeof (struct bitvalue));
 		      (yyval.bit)->type = zeroone;
 		      (yyval.bit)->value = 0;
 		      (yyval.bit)->next = NULL;
 		    }
-#line 1619 "i386_parse.c"
+#line 1612 "i386_parse.c"
     break;
 
   case 21: /* bit: '1'  */
-#line 427 "i386_parse.y"
+#line 426 "i386_parse.y"
                     {
 		      (yyval.bit) = xmalloc (sizeof (struct bitvalue));
 		      (yyval.bit)->type = zeroone;
 		      (yyval.bit)->value = 1;
 		      (yyval.bit)->next = NULL;
 		    }
-#line 1630 "i386_parse.c"
+#line 1623 "i386_parse.c"
     break;
 
   case 22: /* bit: kBITFIELD  */
-#line 434 "i386_parse.y"
+#line 433 "i386_parse.y"
                     {
 		      (yyval.bit) = xmalloc (sizeof (struct bitvalue));
 		      struct known_bitfield search;
@@ -1650,23 +1643,23 @@ yyreduce:
 			}
 		      (yyval.bit)->next = NULL;
 		    }
-#line 1654 "i386_parse.c"
+#line 1647 "i386_parse.c"
     break;
 
   case 23: /* optargs: kSPACE args  */
-#line 456 "i386_parse.y"
+#line 455 "i386_parse.y"
                     { (yyval.arg) = (yyvsp[0].arg); }
-#line 1660 "i386_parse.c"
+#line 1653 "i386_parse.c"
     break;
 
   case 24: /* optargs: %empty  */
-#line 458 "i386_parse.y"
+#line 457 "i386_parse.y"
                     { (yyval.arg) = NULL; }
-#line 1666 "i386_parse.c"
+#line 1659 "i386_parse.c"
     break;
 
   case 25: /* args: args ',' arg  */
-#line 462 "i386_parse.y"
+#line 461 "i386_parse.y"
                     {
 		      struct argument *runp = (yyvsp[-2].arg);
 		      while (runp->next != NULL)
@@ -1676,21 +1669,21 @@ yyreduce:
 		      runp->next->next = NULL;
 		      (yyval.arg) = (yyvsp[-2].arg);
 		    }
-#line 1680 "i386_parse.c"
+#line 1673 "i386_parse.c"
     break;
 
   case 26: /* args: arg  */
-#line 472 "i386_parse.y"
+#line 471 "i386_parse.y"
                     {
 		      (yyval.arg) = xmalloc (sizeof (struct argument));
 		      (yyval.arg)->name = combine ((yyvsp[0].name));
 		      (yyval.arg)->next = NULL;
 		    }
-#line 1690 "i386_parse.c"
+#line 1683 "i386_parse.c"
     break;
 
   case 27: /* arg: arg argcomp  */
-#line 480 "i386_parse.y"
+#line 479 "i386_parse.y"
                     {
 		      struct argname *runp = (yyvsp[-1].name);
 		      while (runp->next != NULL)
@@ -1698,17 +1691,17 @@ yyreduce:
 		      runp->next = (yyvsp[0].name);
 		      (yyval.name) = (yyvsp[-1].name);
 		    }
-#line 1702 "i386_parse.c"
+#line 1695 "i386_parse.c"
     break;
 
   case 28: /* arg: argcomp  */
-#line 488 "i386_parse.y"
+#line 487 "i386_parse.y"
                     { (yyval.name) = (yyvsp[0].name); }
-#line 1708 "i386_parse.c"
+#line 1701 "i386_parse.c"
     break;
 
   case 29: /* argcomp: kBITFIELD  */
-#line 491 "i386_parse.y"
+#line 490 "i386_parse.y"
                     {
 		      (yyval.name) = xmalloc (sizeof (struct argname));
 		      (yyval.name)->type = nfield;
@@ -1740,11 +1733,11 @@ yyreduce:
 		      else
 			(yyval.name)->field = *res;
 		    }
-#line 1744 "i386_parse.c"
+#line 1737 "i386_parse.c"
     break;
 
   case 30: /* argcomp: kCHAR  */
-#line 523 "i386_parse.y"
+#line 522 "i386_parse.y"
                     {
 		      (yyval.name) = xmalloc (sizeof (struct argname));
 		      (yyval.name)->type = string;
@@ -1753,22 +1746,22 @@ yyreduce:
 		      (yyval.name)->str[0] = (yyvsp[0].ch);
 		      (yyval.name)->str[1] = '\0';
 		    }
-#line 1757 "i386_parse.c"
+#line 1750 "i386_parse.c"
     break;
 
   case 31: /* argcomp: kID  */
-#line 532 "i386_parse.y"
+#line 531 "i386_parse.y"
                     {
 		      (yyval.name) = xmalloc (sizeof (struct argname));
 		      (yyval.name)->type = string;
 		      (yyval.name)->next = NULL;
 		      (yyval.name)->str = (yyvsp[0].str);
 		    }
-#line 1768 "i386_parse.c"
+#line 1761 "i386_parse.c"
     break;
 
   case 32: /* argcomp: ':'  */
-#line 539 "i386_parse.y"
+#line 538 "i386_parse.y"
                     {
 		      (yyval.name) = xmalloc (sizeof (struct argname));
 		      (yyval.name)->type = string;
@@ -1777,11 +1770,11 @@ yyreduce:
 		      (yyval.name)->str[0] = ':';
 		      (yyval.name)->str[1] = '\0';
 		    }
-#line 1781 "i386_parse.c"
+#line 1774 "i386_parse.c"
     break;
 
 
-#line 1785 "i386_parse.c"
+#line 1778 "i386_parse.c"
 
       default: break;
     }
@@ -1863,6 +1856,7 @@ yyerrorlab:
      label yyerrorlab therefore never appears in user code.  */
   if (0)
     YYERROR;
+  ++yynerrs;
 
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
@@ -1923,7 +1917,7 @@ yyerrlab1:
 `-------------------------------------*/
 yyacceptlab:
   yyresult = 0;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
 /*-----------------------------------.
@@ -1931,24 +1925,22 @@ yyacceptlab:
 `-----------------------------------*/
 yyabortlab:
   yyresult = 1;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
-#if !defined yyoverflow
-/*-------------------------------------------------.
-| yyexhaustedlab -- memory exhaustion comes here.  |
-`-------------------------------------------------*/
+/*-----------------------------------------------------------.
+| yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
+`-----------------------------------------------------------*/
 yyexhaustedlab:
   yyerror (YY_("memory exhausted"));
   yyresult = 2;
-  goto yyreturn;
-#endif
+  goto yyreturnlab;
 
 
-/*-------------------------------------------------------.
-| yyreturn -- parsing is finished, clean up and return.  |
-`-------------------------------------------------------*/
-yyreturn:
+/*----------------------------------------------------------.
+| yyreturnlab -- parsing is finished, clean up and return.  |
+`----------------------------------------------------------*/
+yyreturnlab:
   if (yychar != YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
@@ -1975,7 +1967,7 @@ yyreturn:
   return yyresult;
 }
 
-#line 549 "i386_parse.y"
+#line 548 "i386_parse.y"
 
 
 static void
