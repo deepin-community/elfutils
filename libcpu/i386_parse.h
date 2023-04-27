@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -87,7 +87,7 @@ extern int i386_debug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 216 "i386_parse.y"
+#line 215 "i386_parse.y"
 
   unsigned long int num;
   char *str;
@@ -108,6 +108,8 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE i386_lval;
 
+
 int i386_parse (void);
+
 
 #endif /* !YY_I386_I_PARSE_H_INCLUDED  */

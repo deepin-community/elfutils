@@ -1,3 +1,109 @@
+elfutils (0.188-2.1deepin1) unstable; urgency=medium
+
+  * Add deepin debuginfod url
+
+ -- Han Gao <gaohan@iscas.ac.cn>  Sun, 26 Feb 2023 04:21:53 +0800
+
+elfutils (0.188-2.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Add debconf template translation
+    - Dutch translation.
+      Thanks to Frans Spiesschaert (Closes: #994141)
+    - French translation.
+      Thanks Jean-Pierre Giraud (Closes: #994667)
+    - German translation.
+      Thanks Helge Kreutzmann (Closes: #997891)
+    - Portuguese translation.
+      Thanks Américo Monteiro (Closes: #1001920)
+    - Spanish translation.
+      Thanks Camaleón (Closes: #1003517)
+    - Brazilian Portuguese translation.
+      Thanks Paulo Henrique de Lima Santana (Closes: #1025512)
+
+ -- Helge Kreutzmann <debian@helgefjell.de>  Sat, 14 Jan 2023 14:54:50 +0100
+
+elfutils (0.188-2) unstable; urgency=medium
+
+  [ Bastian Germann ]
+  * d/copyright: Convert to machine-readable format, adding missing
+    licenses.  (Closes: #1019937)
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Wed, 21 Dec 2022 15:13:47 -0500
+
+elfutils (0.188-1) unstable; urgency=medium
+
+  * New upstream release.
+  * d/p/{hurd-hacks.diff,kfreebsd-debuginfod,kfreebsd-mremap-stub}:
+    Refresh patches against new upstream version.
+  * d/{libdebuginfod1,libdw1}.symbols: Add new symbols.
+  * d/rules: Remove debuginfod.service.8 during installation.
+    Currently, we don't install debuginfod.service.
+  * Rename upstream's signing key file.
+    - d/u/signing-key.asc: Rename from d/upstream-signing-key.pgp.
+    - d/s/included-binaries: Remove.
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Sun, 13 Nov 2022 20:52:25 -0500
+
+elfutils (0.187-4) unstable; urgency=medium
+
+  * Fix Ubuntu upgrade path for libdebuginfod-common. (LP: #1990638)
+    - d/libdebuginfod-common.postinst: Split Ubuntu-specific code into a
+      separate function.  Clean up ucf/ucfr configuration files when
+      upgrading from libdebuginfod-common versions before 0.187-3.  Create
+      links for the debuginfod shell snippets directly.
+    - d/libdebuginfod-common.postrm: Handle Debian and Ubuntu purge
+      differently.
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Sat, 24 Sep 2022 16:34:05 -0400
+
+elfutils (0.187-3) unstable; urgency=medium
+
+  * Always install debuginfod shell snippets in Ubuntu.
+    - d/libdebuginfod-common.config: Remove snippet to db_input the Ubuntu
+      question.
+    - d/libdebuginfod-common.postinst: Always install debuginfod shell
+      snippets in Ubuntu.
+    - d/libdebuginfod-common.templates: Remove
+      libdebuginfod/useubuntudebuginfod question.
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Wed, 21 Sep 2022 19:08:05 -0400
+
+elfutils (0.187-2) unstable; urgency=medium
+
+  * Pass --sysconfdir to configure and install elfutils.urls.
+    - d/rules: Pass --sysconfdir to configure; don't delete elfutils.urls.
+    - d/libdebuginfod-common.install: Adjust paths and install
+      elfutils.urls.
+  * d/rules: Cleanup debuginfod code and support Ubuntu's debuginfod.
+  * d/libdebuginfod-common.templates: New question for Ubuntu's debuginfod.
+  * d/libdebuginfod-common.config: Ask about Ubuntu's debuginfod.
+  * d/libdebuginfod-common.post{inst,rm}: Cleanup code, fix problems
+    and support Ubuntu.
+    Thanks to наб <nabijaczleweli@nabijaczleweli.xyz> (Closes: #987787)
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Fri, 02 Sep 2022 17:11:29 -0400
+
+elfutils (0.187-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 04 May 2022 01:08:42 +0200
+
+elfutils (0.186-1build1) jammy; urgency=medium
+
+  * No-change rebuild for ppc64el baseline bump.
+
+ -- Łukasz 'sil2100' Zemczak <lukasz.zemczak@ubuntu.com>  Wed, 23 Mar 2022 14:51:35 +0100
+
+elfutils (0.186-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Don't yet install elfutils.urls.
+  * Update symbols file.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 17 Nov 2021 21:49:08 +0100
+
 elfutils (0.185-2) unstable; urgency=medium
 
   * Upload to unstable.
