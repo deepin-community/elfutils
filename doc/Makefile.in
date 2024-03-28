@@ -104,13 +104,13 @@ host_triplet = @host@
 subdir = doc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
-	$(top_srcdir)/m4/biarch.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/host-cpu-c-abi.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/zip.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/biarch.m4 $(top_srcdir)/m4/build-to-host.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/host-cpu-c-abi.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/zip.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -251,6 +251,7 @@ MSGFMT = @MSGFMT@
 MSGMERGE = @MSGMERGE@
 MSGMERGE_FOR_MSGFMT_OPTION = @MSGMERGE_FOR_MSGFMT_OPTION@
 NM = @NM@
+NO_UNDEFINED = @NO_UNDEFINED@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -277,6 +278,8 @@ XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
+ZSTD_COMPRESS_CFLAGS = @ZSTD_COMPRESS_CFLAGS@
+ZSTD_COMPRESS_LIBS = @ZSTD_COMPRESS_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -325,6 +328,8 @@ libexecdir = @libexecdir@
 libmicrohttpd_CFLAGS = @libmicrohttpd_CFLAGS@
 libmicrohttpd_LIBS = @libmicrohttpd_LIBS@
 localedir = @localedir@
+localedir_c = @localedir_c@
+localedir_c_make = @localedir_c_make@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
@@ -348,8 +353,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zip_LIBS = @zip_LIBS@
+zstd_LIBS = @zstd_LIBS@
 EXTRA_DIST = COPYING-GFDL README
-dist_man1_MANS = readelf.1 elfclassify.1
+dist_man1_MANS = readelf.1 elfclassify.1 srcfiles.1
 notrans_dist_man3_MANS = elf_update.3 elf_getdata.3 elf_clone.3 \
 	elf_begin.3 $(am__append_4)
 notrans_dist_man7_MANS = $(am__append_1) $(am__append_3)

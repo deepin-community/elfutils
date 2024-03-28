@@ -396,6 +396,7 @@ __libdw_intern_expression (Dwarf *dbg, bool other_byte_order,
 	case DW_OP_form_tls_address:
 	case DW_OP_GNU_push_tls_address:
 	case DW_OP_stack_value:
+	case DW_OP_GNU_uninit:
 	  /* No operand.  */
 	  break;
 
@@ -811,6 +812,12 @@ initial_offset (Dwarf_Attribute *attr, ptrdiff_t *offset)
 			    : DWARF_E_NO_DEBUG_LOCLISTS),
 			    NULL, &start_offset) == NULL)
 	return -1;
+
+      Dwarf_Off loc_off;
+      if (INTUSE(dwarf_cu_dwp_section_info) (attr->cu, DW_SECT_LOCLISTS,
+					     &loc_off, NULL) != 0)
+	return -1;
+      start_offset += loc_off;
     }
 
   *offset = start_offset;

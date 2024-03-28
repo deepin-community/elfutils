@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -19,7 +19,7 @@ purge_debuginfod_debian()
 
 purge_debuginfod_ubuntu()
 {
-    local -r CONFTEMPLATEPATH="/usr/share/libdebuginfod-common"
+    CONFTEMPLATEPATH="/usr/share/libdebuginfod-common"
 
     for ext in sh csh; do
 	[ -L "/etc/profile.d/debuginfod.${ext}" ] || continue
