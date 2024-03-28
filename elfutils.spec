@@ -1,6 +1,6 @@
 # -*- rpm-spec-*-
 Name: elfutils
-Version: 0.188
+Version: 0.191
 Release: 1
 URL: http://elfutils.org/
 License: GPLv3+ and (GPLv2+ or LGPLv3+) and GFDL
@@ -233,7 +233,7 @@ fi
 
 %files
 %license COPYING COPYING-GPLV2 COPYING-LGPLV3 doc/COPYING-GFDL
-%doc README TODO CONTRIBUTING
+%doc README TODO CONTRIBUTING SECURITY
 %{_bindir}/eu-addr2line
 %{_bindir}/eu-ar
 %{_bindir}/eu-elfclassify
@@ -247,6 +247,7 @@ fi
 %{_bindir}/eu-ranlib
 %{_bindir}/eu-readelf
 %{_bindir}/eu-size
+%{_bindir}/eu-srcfiles
 %{_bindir}/eu-stack
 %{_bindir}/eu-strings
 %{_bindir}/eu-strip
@@ -341,6 +342,45 @@ exit 0
 %systemd_postun_with_restart debuginfod.service
 
 %changelog
+* Fri Mar  1 2024 Aaron Merey <amerey@redhat.com> 0.191-1
+- dwarf_addrdie now supports binaries lacking a .debug_aranges
+  section.
+- Improved support for DWARF package files.  Add new function
+  dwarf_cu_dwp_section_info.
+- debuginfod: Caching eviction logic improvements to improve retention
+  of small/frequent/slow files such as Fedora's vdso.debug.
+- srcfiles: Can now fetch the source files of a DWARF/ELF file and
+  place them into a zip.
+
+* Fri Nov  3 2023 Mark Wielaard <mark@klomp.org> 0.190-1
+- CONTRIBUTING: Switch from real name policy to known identity policy.
+  Updated ChangeLog policy (no more separate ChangeLog files).
+  There is a SECURITY bug policy now. The default branch is now 'main'.
+- libelf: Add RELR support.
+- libdw: Recognize .debug_[ct]u_index sections.
+- readelf: Support readelf -Ds, --use-dynamic --symbol.
+  Support .gdb_index version 9
+- scrlines: New tool that compiles a list of source files associated
+  with a specified dwarf/elf file.
+- debuginfod: Schema change (reindexing required, sorry!) for a 60%
+  compression in filename representation, which was a large
+  part of the sqlite index; also, more deliberate sqlite
+  -wal management during scanning using the --scan-checkpoint option.
+- backends: Various LoongArch updates.
+
+* Fri Mar  3 2023 Mark Wielaard <mark@klomp.org> 0.189-1
+- configure: eu-nm, eu-addr2line and eu-stack can provide demangled
+  symbols when linked with libstdc++. Use --disable-demangler to disable.
+  A new option --enable-sanitize-memory has been added for msan sanitizer
+  support.
+- libelf: elf_compress now supports ELFCOMPRESS_ZSTD when build
+  against libzstd
+- libdwfl: dwfl_module_return_value_location now returns 0 (no return
+  type) for DIEs that point to a DW_TAG_unspecified_type.
+- elfcompress: -t, --type= now support zstd if libelf has been build
+  with ELFCOMPRESS_ZSTD support.
+- backends: Add support for LoongArch and Synopsys ARCv2 processors.
+
 * Wed Nov  2 2022 Mark Wielaard <mark@klomp.org> 0.188-1
 - readelf: Add -D, --use-dynamic option.
 - debuginfod-client: Add $DEBUGINFOD_HEADERS_FILE setting to supply
