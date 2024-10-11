@@ -168,13 +168,13 @@ binary-arch: build-arch install
 	dh_strip_nondeterminism -a
 	dh_compress -a
 	dh_fixperms -a
-	dpkg-gensymbols -Pdebian/libdw1t64/ -plibdw1t64 -c4
-	dpkg-gensymbols -Pdebian/libasm1t64/ -plibasm1t64 -c4
-	dpkg-gensymbols -Pdebian/libelf1t64/ -plibelf1t64 -c4
-	dh_makeshlibs -plibelf1t64 -V "libelf1t64 (>= 0.132)"
-	dh_makeshlibs -plibasm1t64 -V "libasm1t64 (>= 0.132)"
-	dh_makeshlibs -plibdw1t64 -V "libdw1t64 (>= 0.138)"
-	dh_makeshlibs -plibdebuginfod1t64
+	dpkg-gensymbols -Pdebian/libdw1/ -plibdw1 -c4
+	dpkg-gensymbols -Pdebian/libasm1/ -plibasm1 -c4
+	dpkg-gensymbols -Pdebian/libelf1/ -plibelf1 -c4
+	dh_makeshlibs -plibelf1 -V "libelf1 (>= 0.132)"
+	dh_makeshlibs -plibasm1 -V "libasm1 (>= 0.132)"
+	dh_makeshlibs -plibdw1 -V "libdw1 (>= 0.138)"
+	dh_makeshlibs -plibdebuginfod1
 	dh_installdebconf -a
 	dh_installdeb -a
 	dh_shlibdeps -a

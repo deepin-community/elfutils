@@ -1,3 +1,9 @@
+elfutils (0.191-1deepin2) unstable; urgency=medium
+
+  * revert 64-bit time_t transition.
+
+ -- LiChengGang <lichenggang@uniontech.com>  Fri, 11 Oct 2024 10:06:52 +0800
+
 elfutils (0.191-1deepin1) unstable; urgency=medium
 
   * Add distro Deepin support

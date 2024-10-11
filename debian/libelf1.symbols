@@ -1,4 +1,4 @@
-libelf.so.1 libelf1t64 #MINVER#
+libelf.so.1 libelf1 #MINVER#
  *@ELFUTILS_1.0 0.131
  *@ELFUTILS_1.1 0.131
  *@ELFUTILS_1.1.1 0.131
