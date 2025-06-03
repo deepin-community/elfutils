@@ -17,3 +17,4 @@ remove-old-glibc-hack.diff
 kfreebsd-debuginfod
 kfreebsd-mremap-stub
 hurd-hacks.diff
+0001-feat-add-sw-support.patch
