@@ -1,0 +1,1267 @@
+From b48cad6f9117a4cb65ace830ad85f164be71ca37 Mon Sep 17 00:00:00 2001
+From: hudeng <hudeng@deepin.org>
+Date: Tue, 3 Jun 2025 10:46:31 +0000
+Subject: [PATCH] feat: add sw support
+
+---
+ backends/Makefile.am                  |   7 +-
+ backends/Makefile.in                  |  35 +++++-
+ backends/sw_64_auxv.c                 |  49 ++++++++
+ backends/sw_64_corenote.c             |  70 +++++++++++
+ backends/sw_64_init.c                 |  63 ++++++++++
+ backends/sw_64_regs.c                 | 164 ++++++++++++++++++++++++++
+ backends/sw_64_reloc.def              |  63 ++++++++++
+ backends/sw_64_retval.c               | 150 +++++++++++++++++++++++
+ backends/sw_64_symbol.c               | 156 ++++++++++++++++++++++++
+ config/config.guess                   |  46 ++++++++
+ config/config.sub                     |   1 +
+ configure                             |   4 +-
+ libdwelf/dwelf_elf_e_machine_string.c |   3 +
+ libebl/eblopenbackend.c               |   2 +
+ libelf/elf-knowledge.h                |   2 +-
+ libelf/elf.h                          |  73 ++++++++++++
+ m4/host-cpu-c-abi.m4                  |  13 +-
+ src/Makefile.in                       |   2 +-
+ src/elflint.c                         |   2 +-
+ src/findtextrel.c                     |   2 +-
+ tests/saridx.c                        |   1 +
+ 21 files changed, 894 insertions(+), 14 deletions(-)
+ create mode 100644 backends/sw_64_auxv.c
+ create mode 100644 backends/sw_64_corenote.c
+ create mode 100644 backends/sw_64_init.c
+ create mode 100644 backends/sw_64_regs.c
+ create mode 100644 backends/sw_64_reloc.def
+ create mode 100644 backends/sw_64_retval.c
+ create mode 100644 backends/sw_64_symbol.c
+
+diff --git a/backends/Makefile.am b/backends/Makefile.am
+index bbb2aac..e8b054a 100644
+--- a/backends/Makefile.am
++++ b/backends/Makefile.am
+@@ -36,7 +36,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/libebl -I$(top_srcdir)/libasm \
+ 
+ noinst_LIBRARIES = libebl_backends.a libebl_backends_pic.a
+ 
+-modules = i386 sh x86_64 ia64 alpha arm aarch64 sparc ppc ppc64 s390 \
++modules = i386 sh x86_64 ia64 sw_64 alpha arm aarch64 sparc ppc ppc64 s390 \
+ 	  m68k bpf riscv csky loongarch arc
+ 
+ i386_SRCS = i386_init.c i386_symbol.c i386_corenote.c i386_cfi.c \
+@@ -55,6 +55,9 @@ ia64_SRCS = ia64_init.c ia64_symbol.c ia64_regs.c ia64_retval.c
+ alpha_SRCS = alpha_init.c alpha_symbol.c alpha_retval.c alpha_regs.c \
+ 	     alpha_corenote.c alpha_auxv.c
+ 
++sw_64_SRCS = sw_64_init.c sw_64_symbol.c sw_64_retval.c sw_64_regs.c \
++	     sw_64_corenote.c sw_64_auxv.c
++
+ arm_SRCS = arm_init.c arm_symbol.c arm_regs.c arm_corenote.c \
+ 	   arm_auxv.c arm_attrs.c arm_retval.c arm_cfi.c arm_initreg.c \
+ 	   arm_machineflagname.c
+@@ -103,7 +106,7 @@ loongarch_SRCS = loongarch_init.c loongarch_symbol.c loongarch_cfi.c \
+ arc_SRCS = arc_init.c arc_symbol.c
+ 
+ libebl_backends_a_SOURCES = $(i386_SRCS) $(sh_SRCS) $(x86_64_SRCS) \
+-			    $(ia64_SRCS) $(alpha_SRCS) $(arm_SRCS) \
++			    $(ia64_SRCS) $(sw_64_SRCS) $(alpha_SRCS) $(arm_SRCS) \
+ 			    $(aarch64_SRCS) $(sparc_SRCS) $(ppc_SRCS) \
+ 			    $(ppc64_SRCS) $(s390_SRCS) \
+ 			    $(m68k_SRCS) $(bpf_SRCS) $(riscv_SRCS) $(csky_SRCS) \
+diff --git a/backends/Makefile.in b/backends/Makefile.in
+index 48b53f5..6e244c0 100644
+--- a/backends/Makefile.in
++++ b/backends/Makefile.in
+@@ -175,12 +175,15 @@ am__objects_16 = loongarch_init.$(OBJEXT) loongarch_symbol.$(OBJEXT) \
+ 	loongarch_retval.$(OBJEXT) loongarch_initreg.$(OBJEXT) \
+ 	loongarch_unwind.$(OBJEXT) loongarch_corenote.$(OBJEXT)
+ am__objects_17 = arc_init.$(OBJEXT) arc_symbol.$(OBJEXT)
++am__objects_18 = sw_64_init.$(OBJEXT) sw_64_symbol.$(OBJEXT) \
++	sw_64_retval.$(OBJEXT) sw_64_regs.$(OBJEXT) \
++	sw_64_corenote.$(OBJEXT) sw_64_auxv.$(OBJEXT)
+ am_libebl_backends_a_OBJECTS = $(am__objects_1) $(am__objects_2) \
+ 	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
+ 	$(am__objects_6) $(am__objects_7) $(am__objects_8) \
+ 	$(am__objects_9) $(am__objects_10) $(am__objects_11) \
+ 	$(am__objects_12) $(am__objects_13) $(am__objects_14) \
+-	$(am__objects_15) $(am__objects_16) $(am__objects_17)
++	$(am__objects_15) $(am__objects_16) $(am__objects_17) $(am__objects_18)
+ libebl_backends_a_OBJECTS = $(am_libebl_backends_a_OBJECTS)
+ libebl_backends_pic_a_AR = $(AR) $(ARFLAGS)
+ libebl_backends_pic_a_LIBADD =
+@@ -207,7 +210,10 @@ am__depfiles_remade = ./$(DEPDIR)/aarch64_cfi.Po \
+ 	./$(DEPDIR)/aarch64_unwind.Po ./$(DEPDIR)/alpha_auxv.Po \
+ 	./$(DEPDIR)/alpha_corenote.Po ./$(DEPDIR)/alpha_init.Po \
+ 	./$(DEPDIR)/alpha_regs.Po ./$(DEPDIR)/alpha_retval.Po \
+-	./$(DEPDIR)/alpha_symbol.Po ./$(DEPDIR)/arc_init.Po \
++	./$(DEPDIR)/alpha_symbol.Po ./$(DEPDIR)/sw_64_auxv.Po \
++	./$(DEPDIR)/sw_64_corenote.Po ./$(DEPDIR)/sw_64_init.Po \
++	./$(DEPDIR)/sw_64_regs.Po ./$(DEPDIR)/sw_64_retval.Po \
++	./$(DEPDIR)/sw_64_symbol.Po ./$(DEPDIR)/arc_init.Po \
+ 	./$(DEPDIR)/arc_symbol.Po ./$(DEPDIR)/arm_attrs.Po \
+ 	./$(DEPDIR)/arm_auxv.Po ./$(DEPDIR)/arm_cfi.Po \
+ 	./$(DEPDIR)/arm_corenote.Po ./$(DEPDIR)/arm_init.Po \
+@@ -539,7 +545,7 @@ textrel_msg = echo "WARNING: TEXTREL found in '$@'"
+ @FATAL_TEXTREL_TRUE@textrel_found = $(textrel_msg); exit 1
+ textrel_check = if $(READELF) -d $@ | grep -F -q TEXTREL; then $(textrel_found); fi
+ noinst_LIBRARIES = libebl_backends.a libebl_backends_pic.a
+-modules = i386 sh x86_64 ia64 alpha arm aarch64 sparc ppc ppc64 s390 \
++modules = i386 sh x86_64 ia64 sw_64 alpha arm aarch64 sparc ppc ppc64 s390 \
+ 	  m68k bpf riscv csky loongarch arc
+ 
+ i386_SRCS = i386_init.c i386_symbol.c i386_corenote.c i386_cfi.c \
+@@ -555,6 +561,9 @@ ia64_SRCS = ia64_init.c ia64_symbol.c ia64_regs.c ia64_retval.c
+ alpha_SRCS = alpha_init.c alpha_symbol.c alpha_retval.c alpha_regs.c \
+ 	     alpha_corenote.c alpha_auxv.c
+ 
++sw_64_SRCS = sw_64_init.c sw_64_symbol.c sw_64_retval.c sw_64_regs.c \
++	     sw_64_corenote.c sw_64_auxv.c
++
+ arm_SRCS = arm_init.c arm_symbol.c arm_regs.c arm_corenote.c \
+ 	   arm_auxv.c arm_attrs.c arm_retval.c arm_cfi.c arm_initreg.c \
+ 	   arm_machineflagname.c
+@@ -601,7 +610,7 @@ loongarch_SRCS = loongarch_init.c loongarch_symbol.c loongarch_cfi.c \
+ 
+ arc_SRCS = arc_init.c arc_symbol.c
+ libebl_backends_a_SOURCES = $(i386_SRCS) $(sh_SRCS) $(x86_64_SRCS) \
+-			    $(ia64_SRCS) $(alpha_SRCS) $(arm_SRCS) \
++			    $(ia64_SRCS) $(sw_64_SRCS) $(alpha_SRCS) $(arm_SRCS) \
+ 			    $(aarch64_SRCS) $(sparc_SRCS) $(ppc_SRCS) \
+ 			    $(ppc64_SRCS) $(s390_SRCS) \
+ 			    $(m68k_SRCS) $(bpf_SRCS) $(riscv_SRCS) $(csky_SRCS) \
+@@ -680,6 +689,12 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/alpha_regs.Po@am__quote@ # am--include-marker
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/alpha_retval.Po@am__quote@ # am--include-marker
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/alpha_symbol.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sw_64_auxv.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sw_64_corenote.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sw_64_init.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sw_64_regs.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sw_64_retval.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sw_64_symbol.Po@am__quote@ # am--include-marker
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arc_init.Po@am__quote@ # am--include-marker
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arc_symbol.Po@am__quote@ # am--include-marker
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arm_attrs.Po@am__quote@ # am--include-marker
+@@ -946,6 +961,12 @@ distclean: distclean-am
+ 	-rm -f ./$(DEPDIR)/alpha_regs.Po
+ 	-rm -f ./$(DEPDIR)/alpha_retval.Po
+ 	-rm -f ./$(DEPDIR)/alpha_symbol.Po
++	-rm -f ./$(DEPDIR)/sw_64_auxv.Po
++	-rm -f ./$(DEPDIR)/sw_64_corenote.Po
++	-rm -f ./$(DEPDIR)/sw_64_init.Po
++	-rm -f ./$(DEPDIR)/sw_64_regs.Po
++	-rm -f ./$(DEPDIR)/sw_64_retval.Po
++	-rm -f ./$(DEPDIR)/sw_64_symbol.Po
+ 	-rm -f ./$(DEPDIR)/arc_init.Po
+ 	-rm -f ./$(DEPDIR)/arc_symbol.Po
+ 	-rm -f ./$(DEPDIR)/arm_attrs.Po
+@@ -1111,6 +1132,12 @@ maintainer-clean: maintainer-clean-am
+ 	-rm -f ./$(DEPDIR)/alpha_regs.Po
+ 	-rm -f ./$(DEPDIR)/alpha_retval.Po
+ 	-rm -f ./$(DEPDIR)/alpha_symbol.Po
++	-rm -f ./$(DEPDIR)/sw_64_auxv.Po
++	-rm -f ./$(DEPDIR)/sw_64_corenote.Po
++	-rm -f ./$(DEPDIR)/sw_64_init.Po
++	-rm -f ./$(DEPDIR)/sw_64_regs.Po
++	-rm -f ./$(DEPDIR)/sw_64_retval.Po
++	-rm -f ./$(DEPDIR)/sw_64_symbol.Po
+ 	-rm -f ./$(DEPDIR)/arc_init.Po
+ 	-rm -f ./$(DEPDIR)/arc_symbol.Po
+ 	-rm -f ./$(DEPDIR)/arm_attrs.Po
+diff --git a/backends/sw_64_auxv.c b/backends/sw_64_auxv.c
+new file mode 100644
+index 0000000..b2ce630
+--- /dev/null
++++ b/backends/sw_64_auxv.c
+@@ -0,0 +1,49 @@
++/* Alpha-specific auxv handling.
++   Copyright (C) 2008 Red Hat, Inc.
++   This file is part of elfutils.
++
++   This file is free software; you can redistribute it and/or modify
++   it under the terms of either
++
++     * the GNU Lesser General Public License as published by the Free
++       Software Foundation; either version 3 of the License, or (at
++       your option) any later version
++
++   or
++
++     * the GNU General Public License as published by the Free
++       Software Foundation; either version 2 of the License, or (at
++       your option) any later version
++
++   or both in parallel, as here.
++
++   elfutils is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   General Public License for more details.
++
++   You should have received copies of the GNU General Public License and
++   the GNU Lesser General Public License along with this program.  If
++   not, see <http://www.gnu.org/licenses/>.  */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif
++
++#define BACKEND sw_64_
++#include "libebl_CPU.h"
++
++int
++EBLHOOK(auxv_info) (GElf_Xword a_type, const char **name, const char **format)
++{
++  if (a_type != AT_HWCAP)
++    return 0;
++
++  *name = "HWCAP";
++  *format = "b"
++    "bwx\0" "fix\0" "cix\0" "0x08\0"
++    "0x10\0" "0x20\0" "0x40\0" "0x80\0"
++    "max\0" "precise_trap\0"
++    "\0";
++  return 1;
++}
+diff --git a/backends/sw_64_corenote.c b/backends/sw_64_corenote.c
+new file mode 100644
+index 0000000..bfd9f03
+--- /dev/null
++++ b/backends/sw_64_corenote.c
+@@ -0,0 +1,70 @@
++/* PowerPC specific core note handling.
++   Copyright (C) 2007 Red Hat, Inc.
++   This file is part of elfutils.
++
++   This file is free software; you can redistribute it and/or modify
++   it under the terms of either
++
++     * the GNU Lesser General Public License as published by the Free
++       Software Foundation; either version 3 of the License, or (at
++       your option) any later version
++
++   or
++
++     * the GNU General Public License as published by the Free
++       Software Foundation; either version 2 of the License, or (at
++       your option) any later version
++
++   or both in parallel, as here.
++
++   elfutils is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   General Public License for more details.
++
++   You should have received copies of the GNU General Public License and
++   the GNU Lesser General Public License along with this program.  If
++   not, see <http://www.gnu.org/licenses/>.  */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif
++
++#include <elf.h>
++#include <inttypes.h>
++#include <stddef.h>
++#include <stdio.h>
++#include <sys/time.h>
++
++#define BACKEND	sw_64_
++#include "libebl_CPU.h"
++
++static const Ebl_Register_Location prstatus_regs[] =
++  {
++    { .offset = 0, .regno = 0, .count = 31, .bits = 64 }, /* r0-r30 */
++    { .offset = 32 * 8, .regno = 64, .count = 1, .bits = 64 }, /* pc */
++    { .offset = 33 * 8, .regno = 66, .count = 1, .bits = 64 }, /* unique */
++  };
++#define PRSTATUS_REGS_SIZE	(33 * 8)
++
++static const Ebl_Register_Location fpregset_regs[] =
++  {
++    { .offset = 0, .regno = 32, .count = 32, .bits = 64 }, /* f0-f30, fpcr */
++  };
++#define FPREGSET_SIZE		(32 * 8)
++
++#define ULONG			uint64_t
++#define ALIGN_ULONG		8
++#define TYPE_ULONG		ELF_T_XWORD
++#define TYPE_LONG		ELF_T_SXWORD
++#define PID_T			int32_t
++#define	UID_T			uint32_t
++#define	GID_T			uint32_t
++#define ALIGN_PID_T		4
++#define ALIGN_UID_T		4
++#define ALIGN_GID_T		4
++#define TYPE_PID_T		ELF_T_SWORD
++#define TYPE_UID_T		ELF_T_WORD
++#define TYPE_GID_T		ELF_T_WORD
++
++#include "linux-core-note.c"
+diff --git a/backends/sw_64_init.c b/backends/sw_64_init.c
+new file mode 100644
+index 0000000..c0dfb07
+--- /dev/null
++++ b/backends/sw_64_init.c
+@@ -0,0 +1,63 @@
++/* Initialization of sw_64 specific backend library.
++   Copyright (C) 2002-2011 Red Hat, Inc.
++   This file is part of elfutils.
++   Written by Ulrich Drepper <drepper@redhat.com>, 2002.
++
++   This file is free software; you can redistribute it and/or modify
++   it under the terms of either
++
++     * the GNU Lesser General Public License as published by the Free
++       Software Foundation; either version 3 of the License, or (at
++       your option) any later version
++
++   or
++
++     * the GNU General Public License as published by the Free
++       Software Foundation; either version 2 of the License, or (at
++       your option) any later version
++
++   or both in parallel, as here.
++
++   elfutils is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   General Public License for more details.
++
++   You should have received copies of the GNU General Public License and
++   the GNU Lesser General Public License along with this program.  If
++   not, see <http://www.gnu.org/licenses/>.  */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif
++
++#define BACKEND		sw_64_
++#define RELOC_PREFIX	R_SW_64_
++#include "libebl_CPU.h"
++
++/* This defines the common reloc hooks based on sw_64_reloc.def.  */
++#include "common-reloc.c"
++
++
++Ebl *
++sw_64_init (Elf *elf __attribute__ ((unused)),
++	    GElf_Half machine __attribute__ ((unused)),
++	    Ebl *eh)
++{
++  /* We handle it.  */
++  sw_64_init_reloc (eh);
++  HOOK (eh, dynamic_tag_name);
++  HOOK (eh, dynamic_tag_check);
++  HOOK (eh, reloc_simple_type);
++  HOOK (eh, return_value_location);
++  HOOK (eh, machine_section_flag_check);
++  HOOK (eh, check_special_section);
++  HOOK (eh, check_special_symbol);
++  HOOK (eh, check_st_other_bits);
++  HOOK (eh, register_info);
++  HOOK (eh, core_note);
++  HOOK (eh, auxv_info);
++  eh->sysvhash_entrysize = sizeof (Elf64_Xword);
++
++  return eh;
++}
+diff --git a/backends/sw_64_regs.c b/backends/sw_64_regs.c
+new file mode 100644
+index 0000000..cba2447
+--- /dev/null
++++ b/backends/sw_64_regs.c
+@@ -0,0 +1,164 @@
++/* Register names and numbers for sw_64 DWARF.
++   Copyright (C) 2007 Red Hat, Inc.
++   This file is part of elfutils.
++
++   This file is free software; you can redistribute it and/or modify
++   it under the terms of either
++
++     * the GNU Lesser General Public License as published by the Free
++       Software Foundation; either version 3 of the License, or (at
++       your option) any later version
++
++   or
++
++     * the GNU General Public License as published by the Free
++       Software Foundation; either version 2 of the License, or (at
++       your option) any later version
++
++   or both in parallel, as here.
++
++   elfutils is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   General Public License for more details.
++
++   You should have received copies of the GNU General Public License and
++   the GNU Lesser General Public License along with this program.  If
++   not, see <http://www.gnu.org/licenses/>.  */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif
++
++#include <string.h>
++#include <dwarf.h>
++
++#define BACKEND sw_64_
++#include "libebl_CPU.h"
++
++ssize_t
++sw_64_register_info (Ebl *ebl __attribute__ ((unused)),
++		     int regno, char *name, size_t namelen,
++		     const char **prefix, const char **setname,
++		     int *bits, int *type)
++{
++  if (name == NULL)
++    return 67;
++
++  if (regno < 0 || regno > 66 || namelen < 7)
++    return -1;
++
++  *prefix = "$";
++
++  *bits = 64;
++  *type = DW_ATE_signed;
++  *setname = "integer";
++  if (regno >= 32 && regno < 64)
++    {
++      *setname = "FPU";
++      *type = DW_ATE_float;
++    }
++
++  switch (regno)
++    {
++    case 0:
++      name[0] = 'v';
++      name[1] = '0';
++      namelen = 2;
++      break;
++
++    case 1 ... 8:
++      name[0] = 't';
++      name[1] = regno - 1 + '0';
++      namelen = 2;
++      break;
++
++    case 9 ... 15:
++      name[0] = 's';
++      name[1] = regno - 9 + '0';
++      namelen = 2;
++      break;
++
++    case 16 ... 21:
++      name[0] = 'a';
++      name[1] = regno - 16 + '0';
++      namelen = 2;
++      break;
++
++    case 22 ... 23:
++      name[0] = 't';
++      name[1] = regno - 22 + '8';
++      namelen = 2;
++      break;
++
++    case 24 ... 25:
++      name[0] = 't';
++      name[1] = '1';
++      name[2] = regno - 24 + '0';
++      namelen = 3;
++      break;
++
++    case 26:
++      *type = DW_ATE_address;
++      return stpcpy (name, "ra") + 1 - name;
++
++    case 27:
++      return stpcpy (name, "t12") + 1 - name;
++
++    case 28:
++      return stpcpy (name, "at") + 1 - name;
++
++    case 29:
++      *type = DW_ATE_address;
++      return stpcpy (name, "gp") + 1 - name;
++
++    case 30:
++      *type = DW_ATE_address;
++      return stpcpy (name, "sp") + 1 - name;
++
++    case 31:
++      return stpcpy (name, "zero") + 1 - name;
++
++    case 32 ... 32 + 9:
++      name[0] = 'f';
++      name[1] = regno - 32 + '0';
++      namelen = 2;
++      break;
++
++    case 32 + 10 ... 32 + 19:
++      name[0] = 'f';
++      name[1] = '1';
++      name[2] = regno - 32 - 10 + '0';
++      namelen = 3;
++      break;
++
++    case 32 + 20 ... 32 + 29:
++      name[0] = 'f';
++      name[1] = '2';
++      name[2] = regno - 32 - 20 + '0';
++      namelen = 3;
++      break;
++
++    case 32 + 30:
++      return stpcpy (name, "f30") + 1 - name;
++
++    case 32 + 31:
++      *type = DW_ATE_unsigned;
++      return stpcpy (name, "fpcr") + 1 - name;
++
++    case 64:
++      *type = DW_ATE_address;
++      return stpcpy (name, "pc") + 1 - name;
++
++    case 66:
++      *type = DW_ATE_address;
++      return stpcpy (name, "unique") + 1 - name;
++
++    default:
++      *setname = NULL;
++      return 0;
++    }
++
++  name[namelen++] = '\0';
++  return namelen;
++}
+diff --git a/backends/sw_64_reloc.def b/backends/sw_64_reloc.def
+new file mode 100644
+index 0000000..4ad7a9d
+--- /dev/null
++++ b/backends/sw_64_reloc.def
+@@ -0,0 +1,63 @@
++/* List the relocation types for sw_64.  -*- C -*-
++   Copyright (C) 2005 Red Hat, Inc.
++   This file is part of elfutils.
++
++   This file is free software; you can redistribute it and/or modify
++   it under the terms of either
++
++     * the GNU Lesser General Public License as published by the Free
++       Software Foundation; either version 3 of the License, or (at
++       your option) any later version
++
++   or
++
++     * the GNU General Public License as published by the Free
++       Software Foundation; either version 2 of the License, or (at
++       your option) any later version
++
++   or both in parallel, as here.
++
++   elfutils is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   General Public License for more details.
++
++   You should have received copies of the GNU General Public License and
++   the GNU Lesser General Public License along with this program.  If
++   not, see <http://www.gnu.org/licenses/>.  */
++
++/*	    NAME,		REL|EXEC|DYN	*/
++
++RELOC_TYPE (NONE,		0)
++RELOC_TYPE (REFLONG,		REL|EXEC|DYN)
++RELOC_TYPE (REFQUAD,		REL|EXEC|DYN)
++RELOC_TYPE (GPREL32,		REL)
++RELOC_TYPE (LITERAL,		REL)
++RELOC_TYPE (LITUSE,		REL)
++RELOC_TYPE (GPDISP,		REL)
++RELOC_TYPE (BRADDR,		REL)
++RELOC_TYPE (HINT,		REL)
++RELOC_TYPE (SREL16,		REL)
++RELOC_TYPE (SREL32,		REL)
++RELOC_TYPE (SREL64,		REL)
++RELOC_TYPE (GPRELHIGH,		REL)
++RELOC_TYPE (GPRELLOW,		REL)
++RELOC_TYPE (GPREL16,		REL)
++RELOC_TYPE (COPY,		0)
++RELOC_TYPE (GLOB_DAT,		EXEC|DYN)
++RELOC_TYPE (JMP_SLOT,		EXEC|DYN)
++RELOC_TYPE (RELATIVE,		EXEC|DYN)
++RELOC_TYPE (TLS_GD_HI,		REL)
++RELOC_TYPE (TLSGD,		REL)
++RELOC_TYPE (TLS_LDM,		REL)
++RELOC_TYPE (DTPMOD64,		REL|EXEC|DYN)
++RELOC_TYPE (GOTDTPREL,		REL)
++RELOC_TYPE (DTPREL64,		REL|EXEC|DYN)
++RELOC_TYPE (DTPRELHI,		REL)
++RELOC_TYPE (DTPRELLO,		REL)
++RELOC_TYPE (DTPREL16,		REL)
++RELOC_TYPE (GOTTPREL,		REL)
++RELOC_TYPE (TPREL64,		REL|EXEC|DYN)
++RELOC_TYPE (TPRELHI,		REL)
++RELOC_TYPE (TPRELLO,		REL)
++RELOC_TYPE (TPREL16,		REL)
+diff --git a/backends/sw_64_retval.c b/backends/sw_64_retval.c
+new file mode 100644
+index 0000000..fa5b9fe
+--- /dev/null
++++ b/backends/sw_64_retval.c
+@@ -0,0 +1,150 @@
++/* Function return value location for sw_64 ELF ABI.
++   Copyright (C) 2005, 2007, 2014 Red Hat, Inc.
++   This file is part of elfutils.
++
++   This file is free software; you can redistribute it and/or modify
++   it under the terms of either
++
++     * the GNU Lesser General Public License as published by the Free
++       Software Foundation; either version 3 of the License, or (at
++       your option) any later version
++
++   or
++
++     * the GNU General Public License as published by the Free
++       Software Foundation; either version 2 of the License, or (at
++       your option) any later version
++
++   or both in parallel, as here.
++
++   elfutils is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   General Public License for more details.
++
++   You should have received copies of the GNU General Public License and
++   the GNU Lesser General Public License along with this program.  If
++   not, see <http://www.gnu.org/licenses/>.  */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif
++
++#include <assert.h>
++#include <dwarf.h>
++
++#define BACKEND sw_64_
++#include "libebl_CPU.h"
++
++
++/* $0.  */
++static const Dwarf_Op loc_intreg[] =
++  {
++    { .atom = DW_OP_reg0 }
++  };
++#define nloc_intreg	1
++
++/* $f0, or pair $f0, $f1.  */
++static const Dwarf_Op loc_fpreg[] =
++  {
++    { .atom = DW_OP_regx, .number = 32 }, { .atom = DW_OP_piece, .number = 4 },
++    { .atom = DW_OP_regx, .number = 33 }, { .atom = DW_OP_piece, .number = 4 },
++  };
++#define nloc_fpreg	1
++#define nloc_fpregpair	4
++
++/* The return value is a structure and is actually stored in stack space
++   passed in a hidden argument by the caller.  But, the compiler
++   helpfully returns the address of that space in $0.  */
++static const Dwarf_Op loc_aggregate[] =
++  {
++    { .atom = DW_OP_breg0, .number = 0 }
++  };
++#define nloc_aggregate 1
++
++int
++sw_64_return_value_location (Dwarf_Die *functypedie, const Dwarf_Op **locp)
++{
++  /* Start with the function's type, and get the DW_AT_type attribute,
++     which is the type of the return value.  */
++  Dwarf_Die die_mem, *typedie = &die_mem;
++  int tag = dwarf_peeled_die_type (functypedie, typedie);
++  if (tag <= 0)
++    return tag;
++
++  switch (tag)
++    {
++    case -1:
++      return -1;
++
++    case DW_TAG_subrange_type:
++      if (! dwarf_hasattr_integrate (typedie, DW_AT_byte_size))
++	{
++	  Dwarf_Attribute attr_mem, *attr;
++	  attr = dwarf_attr_integrate (typedie, DW_AT_type, &attr_mem);
++	  typedie = dwarf_formref_die (attr, &die_mem);
++	  tag = DWARF_TAG_OR_RETURN (typedie);
++	}
++      FALLTHROUGH;
++
++    case DW_TAG_base_type:
++    case DW_TAG_enumeration_type:
++    case DW_TAG_pointer_type:
++    case DW_TAG_ptr_to_member_type:
++      {
++	Dwarf_Attribute attr_mem;
++	Dwarf_Word size;
++	if (dwarf_formudata (dwarf_attr_integrate (typedie, DW_AT_byte_size,
++						   &attr_mem), &size) != 0)
++	  {
++	    if (tag == DW_TAG_pointer_type || tag == DW_TAG_ptr_to_member_type)
++	      size = 8;
++	    else
++	      return -1;
++	  }
++	if (tag == DW_TAG_base_type)
++	  {
++	    Dwarf_Word encoding;
++	    if (dwarf_formudata (dwarf_attr_integrate (typedie, DW_AT_encoding,
++						       &attr_mem),
++				 &encoding) != 0)
++	      return -1;
++
++	    *locp = loc_fpreg;
++	    if (encoding == DW_ATE_float)
++	      {
++		if (size <= 8)
++		  return nloc_fpreg;
++		goto aggregate;
++	      }
++	    if (encoding == DW_ATE_complex_float)
++	      {
++		if (size <= 8 * 2)
++		  return nloc_fpregpair;
++		goto aggregate;
++	      }
++	  }
++	if (size <= 8)
++	  {
++	    *locp = loc_intreg;
++	    return nloc_intreg;
++	  }
++      }
++
++      FALLTHROUGH;
++
++    case DW_TAG_structure_type:
++    case DW_TAG_class_type:
++    case DW_TAG_union_type:
++    case DW_TAG_string_type:
++    case DW_TAG_array_type:
++    aggregate:
++      *locp = loc_aggregate;
++      return nloc_aggregate;
++    }
++
++  /* XXX We don't have a good way to return specific errors from ebl calls.
++     This value means we do not understand the type, but it is well-formed
++     DWARF and might be valid.  */
++  return -2;
++}
+diff --git a/backends/sw_64_symbol.c b/backends/sw_64_symbol.c
+new file mode 100644
+index 0000000..0fd1ca0
+--- /dev/null
++++ b/backends/sw_64_symbol.c
+@@ -0,0 +1,156 @@
++/* sw_64 specific symbolic name handling.
++   Copyright (C) 2002-2011 Red Hat, Inc.
++   This file is part of elfutils.
++   Written by Ulrich Drepper <drepper@redhat.com>, 2002.
++
++   This file is free software; you can redistribute it and/or modify
++   it under the terms of either
++
++     * the GNU Lesser General Public License as published by the Free
++       Software Foundation; either version 3 of the License, or (at
++       your option) any later version
++
++   or
++
++     * the GNU General Public License as published by the Free
++       Software Foundation; either version 2 of the License, or (at
++       your option) any later version
++
++   or both in parallel, as here.
++
++   elfutils is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   General Public License for more details.
++
++   You should have received copies of the GNU General Public License and
++   the GNU Lesser General Public License along with this program.  If
++   not, see <http://www.gnu.org/licenses/>.  */
++
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif
++
++#include <elf.h>
++#include <stddef.h>
++#include <string.h>
++
++#define BACKEND		sw_64_
++#include "libebl_CPU.h"
++
++
++const char *
++sw_64_dynamic_tag_name (int64_t tag, char *buf __attribute__ ((unused)),
++			size_t len __attribute__ ((unused)))
++{
++  switch (tag)
++    {
++    case DT_SW_64_PLTRO:
++      return "SW_64_PLTRO";
++    default:
++      break;
++    }
++  return NULL;
++}
++
++bool
++sw_64_dynamic_tag_check (int64_t tag)
++{
++  return tag == DT_SW_64_PLTRO;
++}
++
++/* Check for the simple reloc types.  */
++Elf_Type
++sw_64_reloc_simple_type (Ebl *ebl __attribute__ ((unused)), int type,
++			 int *addsub __attribute__ ((unused)))
++{
++  switch (type)
++    {
++    case R_SW_64_REFLONG:
++      return ELF_T_WORD;
++    case R_SW_64_REFQUAD:
++      return ELF_T_XWORD;
++    default:
++      return ELF_T_NUM;
++    }
++}
++
++
++/* Check whether SHF_MASKPROC flags are valid.  */
++bool
++sw_64_machine_section_flag_check (GElf_Xword sh_flags)
++{
++  return (sh_flags &~ (SHF_SW_64_GPREL)) == 0;
++}
++
++bool
++sw_64_check_special_section (Ebl *ebl,
++			     int ndx __attribute__ ((unused)),
++			     const GElf_Shdr *shdr,
++			     const char *sname __attribute__ ((unused)))
++{
++  if ((shdr->sh_flags
++       & (SHF_WRITE | SHF_EXECINSTR)) == (SHF_WRITE | SHF_EXECINSTR)
++      && shdr->sh_addr != 0)
++    {
++      /* This is ordinarily flagged, but is valid for an old-style PLT.
++
++	 Look for the SHT_DYNAMIC section and the DT_PLTGOT tag in it.
++	 Its d_ptr should match the .plt section's sh_addr.  */
++
++      Elf_Scn *scn = NULL;
++      while ((scn = elf_nextscn (ebl->elf, scn)) != NULL)
++	{
++	  GElf_Shdr scn_shdr;
++	  if (likely (gelf_getshdr (scn, &scn_shdr) != NULL)
++	      && scn_shdr.sh_type == SHT_DYNAMIC
++	      && scn_shdr.sh_entsize != 0)
++	    {
++	      GElf_Addr pltgot = 0;
++	      Elf_Data *data = elf_getdata (scn, NULL);
++	      if (data != NULL)
++		for (size_t i = 0; i < data->d_size / scn_shdr.sh_entsize; ++i)
++		  {
++		    GElf_Dyn dyn;
++		    if (unlikely (gelf_getdyn (data, i, &dyn) == NULL))
++		      break;
++		    if (dyn.d_tag == DT_PLTGOT)
++		      pltgot = dyn.d_un.d_ptr;
++		    else if (dyn.d_tag == DT_SW_64_PLTRO && dyn.d_un.d_val != 0)
++		      return false; /* This PLT should not be writable.  */
++		  }
++	      return pltgot == shdr->sh_addr;
++	    }
++	}
++    }
++
++  return false;
++}
++
++/* Check whether given symbol's st_value and st_size are OK despite failing
++   normal checks.  */
++bool
++sw_64_check_special_symbol (Elf *elf __attribute__ ((unused)),
++			    const GElf_Sym *sym __attribute__ ((unused)),
++			    const char *name,
++			    const GElf_Shdr *destshdr __attribute__ ((unused)))
++{
++  if (name == NULL)
++    return false;
++
++  if (strcmp (name, "_GLOBAL_OFFSET_TABLE_") == 0)
++    /* On sw_64 any place in the section is valid.  */
++    return true;
++
++  return false;
++}
++
++/* Check whether only valid bits are set on the st_other symbol flag.
++   Standard ST_VISIBILITY have already been masked off.  */
++bool
++sw_64_check_st_other_bits (unsigned char st_other)
++{
++  return ((((st_other & STO_SW_64_STD_GPLOAD) == STO_SW_64_NOPV)
++	   || ((st_other & STO_SW_64_STD_GPLOAD) == STO_SW_64_STD_GPLOAD))
++	  && (st_other &~ STO_SW_64_STD_GPLOAD) == 0);
++}
+diff --git a/config/config.guess b/config/config.guess
+index e7a6fe3..c757c6f 100755
+--- a/config/config.guess
++++ b/config/config.guess
+@@ -313,6 +313,40 @@ case $UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION in
+     mips:OSF1:*.*)
+ 	GUESS=mips-dec-osf1
+ 	;;
++    sw_64:OSF1:*:*)
++        case $UNAME_RELEASE in
++        *4.0)
++                UNAME_RELEASE=`/usr/sbin/sizer -v | awk '{print $3}'`
++                ;;
++        *5.*)
++                UNAME_RELEASE=`/usr/sbin/sizer -v | awk '{print $4}'`
++                ;;
++        esac
++        # According to Compaq, /usr/sbin/psrinfo has been available on
++        # OSF/1 and Tru64 systems produced since 1995.  I hope that
++        # covers most systems running today.  This code pipes the CPU
++        # types through head -n 1, so we only detect the type of CPU 0.
++        SW_64_CPU_TYPE=`/usr/sbin/psrinfo -v | sed -n -e 's/^  The sw_64 \(.*\) processor.*$/\1/p' | head -n 1`
++        case "$SW_64_CPU_TYPE" in
++            "SW6A (21264)")
++                UNAME_MACHINE="sw_64sw6a" ;;
++            "SW6B (21264)")
++                UNAME_MACHINE="sw_64sw6b" ;;
++            "SW8A (21264)")
++                UNAME_MACHINE="sw_64sw8a" ;;
++            "SW6 (21264A)")
++                UNAME_MACHINE="sw_64sw6" ;;
++        esac
++        # A Pn.n version is a patched version.
++        # A Vn.n version is a released version.
++        # A Tn.n version is a released field test version.
++        # A Xn.n version is an unreleased experimental baselevel.
++        # 1.2 uses "1.2" for uname -r.
++        echo ${UNAME_MACHINE}-dec-osf`echo ${UNAME_RELEASE} | sed -e 's/^[PVTX]//' | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`
++        # Reset EXIT trap before exiting to avoid spurious non-zero exit code.
++        exitcode=$?
++        trap '' 0
++        exit $exitcode ;;
+     alpha:OSF1:*:*)
+ 	# Reset EXIT trap before exiting to avoid spurious non-zero exit code.
+ 	trap '' 0
+@@ -982,6 +1016,17 @@ EOF
+ 	UNAME_MACHINE=aarch64_be
+ 	GUESS=$UNAME_MACHINE-unknown-linux-$LIBC
+ 	;;
++    sw_64:Linux:*:*)
++        case `sed -n '/^cpu model/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo` in
++          SW6A)   UNAME_MACHINE=sw_64sw6a ;;
++          SW6B)   UNAME_MACHINE=sw_64sw6b ;;
++          SW8A)   UNAME_MACHINE=sw_64sw8a ;;
++          SW6)  UNAME_MACHINE=sw_64sw6 ;;
++        esac
++        objdump --private-headers /bin/sh | grep -q ld.so.1
++        if test "$?" = 0 ; then LIBC="gnulibc1" ; fi
++        echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
++        exit ;;
+     alpha:Linux:*:*)
+ 	case `sed -n '/^cpu model/s/^.*: \(.*\)/\1/p' /proc/cpuinfo 2>/dev/null` in
+ 	  EV5)   UNAME_MACHINE=alphaev5 ;;
+@@ -1532,6 +1577,7 @@ EOF
+ 	UNAME_MACHINE=`(uname -p) 2>/dev/null`
+ 	case $UNAME_MACHINE in
+ 	    A*) GUESS=alpha-dec-vms ;;
++	    S*) GUESS=sw_64-dec-vms ;;
+ 	    I*) GUESS=ia64-dec-vms ;;
+ 	    V*) GUESS=vax-dec-vms ;;
+ 	esac ;;
+diff --git a/config/config.sub b/config/config.sub
+index a6d99a0..b150168 100755
+--- a/config/config.sub
++++ b/config/config.sub
+@@ -1182,6 +1182,7 @@ case $cpu-$vendor in
+ 			| a29k \
+ 			| aarch64 | aarch64_be \
+ 			| abacus \
++			| sw_64 \
+ 			| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] \
+ 			| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] \
+ 			| alphapca5[67] | alpha64pca5[67] \
+diff --git a/configure b/configure
+index 6eb5a43..f023fb6 100755
+--- a/configure
++++ b/configure
+@@ -10108,7 +10108,7 @@ else $as_nop
+        case "$gl_cv_host_cpu_c_abi" in
+          i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
+            gl_cv_host_cpu_c_abi_32bit=yes ;;
+-         x86_64 | alpha | arm64 | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
++         x86_64 | sw_64 | alpha | arm64 | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
+            gl_cv_host_cpu_c_abi_32bit=no ;;
+          *)
+            gl_cv_host_cpu_c_abi_32bit=unknown ;;
+@@ -10137,7 +10137,7 @@ else $as_nop
+            ;;
+ 
+          # CPUs that only support a 64-bit ABI.
+-         alpha | alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] \
++         sw_64 | alpha | alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] \
+          | mmix )
+            gl_cv_host_cpu_c_abi_32bit=no
+            ;;
+diff --git a/libdwelf/dwelf_elf_e_machine_string.c b/libdwelf/dwelf_elf_e_machine_string.c
+index 6d588ea..3281f95 100644
+--- a/libdwelf/dwelf_elf_e_machine_string.c
++++ b/libdwelf/dwelf_elf_e_machine_string.c
+@@ -401,6 +401,9 @@ dwelf_elf_e_machine_string (int machine)
+     case EM_LOONGARCH:
+       return "LoongArch";
+ 
++    case EM_SW_64:
++      return "Sw_64";
++
+     case EM_ALPHA:
+       return "Alpha";
+ 
+diff --git a/libebl/eblopenbackend.c b/libebl/eblopenbackend.c
+index 084a154..5236c05 100644
+--- a/libebl/eblopenbackend.c
++++ b/libebl/eblopenbackend.c
+@@ -45,6 +45,7 @@ Ebl *sh_init (Elf *, GElf_Half, Ebl *);
+ Ebl *x86_64_init (Elf *, GElf_Half, Ebl *);
+ Ebl *ia64_init (Elf *, GElf_Half, Ebl *);
+ Ebl *alpha_init (Elf *, GElf_Half, Ebl *);
++Ebl *sw_64_init (Elf *, GElf_Half, Ebl *);
+ Ebl *arm_init (Elf *, GElf_Half, Ebl *);
+ Ebl *aarch64_init (Elf *, GElf_Half, Ebl *);
+ Ebl *sparc_init (Elf *, GElf_Half, Ebl *);
+@@ -76,6 +77,7 @@ static const struct
+   { i386_init, "elf_i386", "i386", 4, EM_386, ELFCLASS32, ELFDATA2LSB },
+   { ia64_init, "elf_ia64", "ia64", 4, EM_IA_64, ELFCLASS64, ELFDATA2LSB },
+   { alpha_init, "elf_alpha", "alpha", 5, EM_ALPHA, ELFCLASS64, ELFDATA2LSB },
++  { sw_64_init, "elf_sw_64", "sw_64", 5, EM_SW_64, ELFCLASS64, ELFDATA2LSB },
+   { x86_64_init, "elf_x86_64", "x86_64", 6, EM_X86_64, ELFCLASS64, ELFDATA2LSB },
+   { ppc_init, "elf_ppc", "ppc", 3, EM_PPC, ELFCLASS32, ELFDATA2MSB },
+   { ppc64_init, "elf_ppc64", "ppc64", 5, EM_PPC64, ELFCLASS64, ELFDATA2MSB },
+diff --git a/libelf/elf-knowledge.h b/libelf/elf-knowledge.h
+index 6e005fa..55b7643 100644
+--- a/libelf/elf-knowledge.h
++++ b/libelf/elf-knowledge.h
+@@ -73,7 +73,7 @@
+    using a 64-bit entry size.  So now we need this macro to special
+    case both the alpha and s390x ABIs.  */
+ #define SH_ENTSIZE_HASH(Ehdr) \
+-  ((Ehdr)->e_machine == EM_ALPHA					      \
++  ((Ehdr)->e_machine == EM_ALPHA || (Ehdr)->e_machine == EM_SW_64					      \
+    || ((Ehdr)->e_machine == EM_S390					      \
+        && (Ehdr)->e_ident[EI_CLASS] == ELFCLASS64) ? 8 : 4)
+ 
+diff --git a/libelf/elf.h b/libelf/elf.h
+index f2206e5..6dd17de 100644
+--- a/libelf/elf.h
++++ b/libelf/elf.h
+@@ -371,6 +371,7 @@ typedef struct
+    chances of collision with official or non-GNU unofficial values.  */
+ 
+ #define EM_ALPHA	0x9026
++#define EM_SW_64	0x9916
+ 
+ /* Legal values for e_version (version).  */
+ 
+@@ -2539,6 +2540,78 @@ enum
+ #define DT_ALPHA_PLTRO		(DT_LOPROC + 0)
+ #define DT_ALPHA_NUM		1
+ 
++/* Sw_64 specific definitions.  */
++
++/* Legal values for e_flags field of Elf64_Ehdr.  */
++
++#define EF_SW_64_32BIT          1       /* All addresses must be < 2GB.  */
++#define EF_SW_64_CANRELAX       2       /* Relocations for relaxing exist.  */
++
++/* Legal values for sh_type field of Elf64_Shdr.  */
++
++/* These two are primerily concerned with ECOFF debugging info.  */
++#define SHT_SW_64_DEBUG         0x70000001
++#define SHT_SW_64_REGINFO       0x70000002
++
++/* Legal values for sh_flags field of Elf64_Shdr.  */
++
++#define SHF_SW_64_GPREL         0x10000000
++
++/* Legal values for st_other field of Elf64_Sym.  */
++#define STO_SW_64_NOPV          0x80    /* No PV required.  */
++#define STO_SW_64_STD_GPLOAD    0x88    /* PV only used for initial ldgp.  */
++
++/* Alpha relocs.  */
++
++#define R_SW_64_NONE            0       /* No reloc */
++#define R_SW_64_REFLONG         1       /* Direct 32 bit */
++#define R_SW_64_REFQUAD         2       /* Direct 64 bit */
++#define R_SW_64_GPREL32         3       /* GP relative 32 bit */
++#define R_SW_64_LITERAL         4       /* GP relative 16 bit w/optimization */
++#define R_SW_64_LITUSE          5       /* Optimization hint for LITERAL */
++#define R_SW_64_GPDISP          6       /* Add displacement to GP */
++#define R_SW_64_BRADDR          7       /* PC+4 relative 23 bit shifted */
++#define R_SW_64_HINT            8       /* PC+4 relative 16 bit shifted */
++#define R_SW_64_SREL16          9       /* PC relative 16 bit */
++#define R_SW_64_SREL32          10      /* PC relative 32 bit */
++#define R_SW_64_SREL64          11      /* PC relative 64 bit */
++#define R_SW_64_GPRELHIGH       17      /* GP relative 32 bit, high 16 bits */
++#define R_SW_64_GPRELLOW        18      /* GP relative 32 bit, low 16 bits */
++#define R_SW_64_GPREL16         19      /* GP relative 16 bit */
++#define R_SW_64_COPY            24      /* Copy symbol at runtime */
++#define R_SW_64_GLOB_DAT        25      /* Create GOT entry */
++#define R_SW_64_JMP_SLOT        26      /* Create PLT entry */
++#define R_SW_64_RELATIVE        27      /* Adjust by program base */
++#define R_SW_64_TLS_GD_HI       28
++#define R_SW_64_TLSGD           29
++#define R_SW_64_TLS_LDM         30
++#define R_SW_64_DTPMOD64        31
++#define R_SW_64_GOTDTPREL       32
++#define R_SW_64_DTPREL64        33
++#define R_SW_64_DTPRELHI        34
++#define R_SW_64_DTPRELLO        35
++#define R_SW_64_DTPREL16        36
++#define R_SW_64_GOTTPREL        37
++#define R_SW_64_TPREL64         38
++#define R_SW_64_TPRELHI         39
++#define R_SW_64_TPRELLO         40
++#define R_SW_64_TPREL16         41
++/* Keep this the last entry.  */
++#define R_SW_64_NUM             46
++
++/* Magic values of the LITUSE relocation addend.  */
++#define LITUSE_SW_64_ADDR       0
++#define LITUSE_SW_64_BASE       1
++#define LITUSE_SW_64_BYTOFF     2
++#define LITUSE_SW_64_JSR        3
++#define LITUSE_SW_64_TLS_GD     4
++#define LITUSE_SW_64_TLS_LDM    5
++
++/* Legal values for d_tag of Elf64_Dyn.  */
++#define DT_SW_64_PLTRO          (DT_LOPROC + 0)
++#define DT_SW_64_NUM            1
++
++
+ /* PowerPC specific declarations */
+ 
+ /* Values for Elf32/64_Ehdr.e_flags.  */
+diff --git a/m4/host-cpu-c-abi.m4 b/m4/host-cpu-c-abi.m4
+index 134f228..90bdeb6 100644
+--- a/m4/host-cpu-c-abi.m4
++++ b/m4/host-cpu-c-abi.m4
+@@ -96,6 +96,12 @@ changequote([,])dnl
+          gl_cv_host_cpu_c_abi=alpha
+          ;;
+ 
++changequote(,)dnl
++       sw_64 )
++changequote([,])dnl
++         gl_cv_host_cpu_c_abi=sw_64
++         ;;
++
+        arm* | aarch64 )
+          # Assume arm with EABI.
+          # On arm64 systems, the C compiler may be generating code in one of
+@@ -358,6 +364,9 @@ EOF
+ #ifndef __alpha__
+ #undef __alpha__
+ #endif
++#ifndef __sw_64__
++#undef __sw_64__
++#endif
+ #ifndef __arm__
+ #undef __arm__
+ #endif
+@@ -471,7 +480,7 @@ AC_DEFUN([gl_HOST_CPU_C_ABI_32BIT],
+        case "$gl_cv_host_cpu_c_abi" in
+          i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
+            gl_cv_host_cpu_c_abi_32bit=yes ;;
+-         x86_64 | alpha | arm64 | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
++         x86_64 | sw_64 | alpha | arm64 | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
+            gl_cv_host_cpu_c_abi_32bit=no ;;
+          *)
+            gl_cv_host_cpu_c_abi_32bit=unknown ;;
+@@ -501,7 +510,7 @@ AC_DEFUN([gl_HOST_CPU_C_ABI_32BIT],
+ 
+          # CPUs that only support a 64-bit ABI.
+ changequote(,)dnl
+-         alpha | alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] \
++         sw_64 | alpha | alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] \
+          | mmix )
+ changequote([,])dnl
+            gl_cv_host_cpu_c_abi_32bit=no
+diff --git a/src/Makefile.in b/src/Makefile.in
+index bc8fddc..3ff9c60 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -516,7 +516,7 @@ ARFLAGS = cr
+ @HAVE_DUPLICATED_COND_WARNING_FALSE@DUPLICATED_COND_WARNING = 
+ @HAVE_DUPLICATED_COND_WARNING_TRUE@DUPLICATED_COND_WARNING = -Wduplicated-cond
+ @HAVE_NULL_DEREFERENCE_WARNING_FALSE@NULL_DEREFERENCE_WARNING = 
+-@HAVE_NULL_DEREFERENCE_WARNING_TRUE@NULL_DEREFERENCE_WARNING = -Wnull-dereference
++@HAVE_NULL_DEREFERENCE_WARNING_TRUE@NULL_DEREFERENCE_WARNING = 
+ @HAVE_IMPLICIT_FALLTHROUGH_5_WARNING_FALSE@@HAVE_IMPLICIT_FALLTHROUGH_WARNING_TRUE@IMPLICIT_FALLTHROUGH_WARNING = -Wimplicit-fallthrough
+ 
+ # Use strict fallthrough. Only __attribute__((fallthrough)) will prevent the
+diff --git a/src/elflint.c b/src/elflint.c
+index 864de71..53aa8d8 100644
+--- a/src/elflint.c
++++ b/src/elflint.c
+@@ -329,7 +329,7 @@ static const int valid_e_machine[] =
+     EM_68HC16, EM_68HC11, EM_68HC08, EM_68HC05, EM_SVX, EM_ST19, EM_VAX,
+     EM_CRIS, EM_JAVELIN, EM_FIREPATH, EM_ZSP, EM_MMIX, EM_HUANY, EM_PRISM,
+     EM_AVR, EM_FR30, EM_D10V, EM_D30V, EM_V850, EM_M32R, EM_MN10300,
+-    EM_MN10200, EM_PJ, EM_OPENRISC, EM_ARC_A5, EM_XTENSA, EM_ALPHA,
++    EM_MN10200, EM_PJ, EM_OPENRISC, EM_ARC_A5, EM_XTENSA, EM_ALPHA, EM_SW_64,
+     EM_TILEGX, EM_TILEPRO, EM_AARCH64, EM_BPF, EM_RISCV, EM_CSKY, EM_LOONGARCH,
+     EM_ARCV2
+   };
+diff --git a/src/findtextrel.c b/src/findtextrel.c
+index d3021a3..aca2474 100644
+--- a/src/findtextrel.c
++++ b/src/findtextrel.c
+@@ -128,7 +128,7 @@ main (int argc, char *argv[])
+   if (debuginfo_root == NULL)
+     {
+       // XXX The runtime should provide this information.
+-#if defined __ia64__ || defined __alpha__
++#if defined __ia64__ || defined __alpha__  || defined __sw_64__
+       debuginfo_root = "/usr/lib/debug";
+ #else
+       debuginfo_root = (sizeof (long int) == 4
+diff --git a/tests/saridx.c b/tests/saridx.c
+index e7f0c56..f5c91d8 100644
+--- a/tests/saridx.c
++++ b/tests/saridx.c
+@@ -51,6 +51,7 @@ static const char *machines[] =
+   MACHINE (EM_RCE),
+   MACHINE (EM_ARM),
+   MACHINE (EM_FAKE_ALPHA),
++  MACHINE (EM_SW_64),
+   MACHINE (EM_SH),
+   MACHINE (EM_SPARCV9),
+   MACHINE (EM_TRICORE),
+-- 
+2.43.4
+
