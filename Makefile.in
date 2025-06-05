@@ -265,6 +265,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DEBUGINFOD_IMA_CERT_PATH = @DEBUGINFOD_IMA_CERT_PATH@
 DEBUGINFOD_URLS = @DEBUGINFOD_URLS@
 DEBUGPRED = @DEBUGPRED@
 DEFS = @DEFS@
@@ -366,6 +367,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+crypto_LIBS = @crypto_LIBS@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -385,6 +387,8 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+jsonc_CFLAGS = @jsonc_CFLAGS@
+jsonc_LIBS = @jsonc_LIBS@
 libarchive_CFLAGS = @libarchive_CFLAGS@
 libarchive_LIBS = @libarchive_LIBS@
 libcurl_CFLAGS = @libcurl_CFLAGS@
@@ -397,6 +401,7 @@ localedir = @localedir@
 localedir_c = @localedir_c@
 localedir_c_make = @localedir_c_make@
 localstatedir = @localstatedir@
+lzma_LIBS = @lzma_LIBS@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 obstack_LIBS = @obstack_LIBS@
@@ -407,6 +412,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+rpm_LIBS = @rpm_LIBS@
 runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
@@ -430,7 +436,7 @@ SUBDIRS = config lib libelf libcpu backends libebl libdwelf libdwfl libdw \
 	  libasm debuginfod src po doc tests
 
 EXTRA_DIST = elfutils.spec GPG-KEY NOTES CONTRIBUTING SECURITY \
-	     COPYING COPYING-GPLV2 COPYING-LGPLV3
+	     COPYING COPYING-GPLV2 COPYING-LGPLV3 CONDUCT
 
 
 # Make sure the test install uses lib64 when $LIB will yield lib64.
@@ -451,6 +457,8 @@ AM_DISTCHECK_CONFIGURE_FLAGS = \
 @GCOV_TRUE@all_COVERAGE_DIRS = $(sort $(src_COVERAGE_DIRS) $(build_COVERAGE_DIRS))
 @GCOV_TRUE@LCOV_DIRS_ARGS = $(patsubst %,--directory=%,$(all_COVERAGE_DIRS))
 @GCOV_TRUE@CLEANFILES = $(COVERAGE_OUTPUT_FILE)
+@GCOV_TRUE@@LCOV_OLD_FALSE@ignore_errors = --ignore-errors empty,negative
+@GCOV_TRUE@@LCOV_OLD_TRUE@ignore_errors = 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -996,6 +1004,7 @@ rpmbuild: dist
 @GCOV_TRUE@	LC_ALL=C $(GENHTML) \
 @GCOV_TRUE@		--legend \
 @GCOV_TRUE@		--show-details \
+@GCOV_TRUE@		$(ignore_errors) \
 @GCOV_TRUE@		--rc=genhtml_branch_coverage=1 \
 @GCOV_TRUE@		--title='$(COVERAGE_TITLE)' \
 @GCOV_TRUE@		--prefix='$(abspath $(abs_srcdir))' \
@@ -1010,6 +1019,7 @@ rpmbuild: dist
 @GCOV_TRUE@		--capture \
 @GCOV_TRUE@		--no-external \
 @GCOV_TRUE@		--no-checksum \
+@GCOV_TRUE@		$(ignore_errors) \
 @GCOV_TRUE@		--rc=lcov_branch_coverage=1 \
 @GCOV_TRUE@		--gcov-tool='$(GCOV)' \
 @GCOV_TRUE@		--output-file='$@' \

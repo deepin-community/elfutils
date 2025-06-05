@@ -36,7 +36,7 @@ purge_debuginfod_ubuntu()
 case "$1" in
     purge)
 	if grep -qFx "ID=debian" /etc/os-release; then
-	    purge_debuginfod_ubuntu
+	    purge_debuginfod_debian
 	elif grep -qFx "ID=ubuntu" /etc/os-release; then
 	    purge_debuginfod_ubuntu
 	fi

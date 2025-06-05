@@ -1,8 +1,8 @@
 --- a/debuginfod/debuginfod-client.c
 +++ b/debuginfod/debuginfod-client.c
-@@ -47,6 +47,10 @@
- #include <stdlib.h>
- #include <gelf.h>
+@@ -58,6 +58,10 @@
+ typedef enum {ignore, enforcing, undefined} ima_policy_t;
+ 
  
 +#ifndef PATH_MAX
 +#define PATH_MAX 1024
@@ -13,7 +13,7 @@
  
 --- a/debuginfod/debuginfod.cxx
 +++ b/debuginfod/debuginfod.cxx
-@@ -53,7 +53,6 @@ extern "C" {
+@@ -58,7 +58,6 @@ extern "C" {
  #include "debuginfod.h"
  #include <dwarf.h>
  
@@ -21,7 +21,7 @@
  #ifdef __GNUC__
  #undef __attribute__ /* glibc bug - rhbz 1763325 */
  #endif
-@@ -132,6 +131,8 @@ using namespace std;
+@@ -149,6 +148,8 @@ using namespace std;
  #define tid() pthread_self()
  #endif
  
@@ -30,9 +30,9 @@
  extern "C" {
  #include "printversion.h"
  #include "system.h"
-@@ -695,10 +696,10 @@ parse_opt (int key, char *arg,
-         argp_failure(state, 1, EINVAL, "scan checkpoint");        
+@@ -748,10 +749,10 @@ parse_opt (int key, char *arg,
        break;
+ #endif
        // case 'h': argp_state_help (state, stderr, ARGP_HELP_LONG|ARGP_HELP_EXIT_OK);
 -    default: return ARGP_ERR_UNKNOWN;
 +    default: return (error_t) ARGP_ERR_UNKNOWN;

@@ -137,10 +137,10 @@ am__libdwfl_a_SOURCES_DIST = dwfl_begin.c dwfl_end.c dwfl_error.c \
 	dwfl_module_getsym.c dwfl_module_addrname.c \
 	dwfl_module_addrsym.c dwfl_module_return_value_location.c \
 	dwfl_module_register_names.c dwfl_segment_report_module.c \
-	link_map.c core-file.c open.c image-header.c dwfl_frame.c \
-	frame_unwind.c dwfl_frame_pc.c linux-pid-attach.c \
-	linux-core-attach.c dwfl_frame_regs.c gzip.c \
-	debuginfod-client.c bzip2.c lzma.c zstd.c
+	dwfl_set_sysroot.c link_map.c core-file.c open.c \
+	image-header.c dwfl_frame.c frame_unwind.c dwfl_frame_pc.c \
+	linux-pid-attach.c linux-core-attach.c dwfl_frame_regs.c \
+	gzip.c debuginfod-client.c bzip2.c lzma.c zstd.c
 @BZLIB_TRUE@am__objects_1 = bzip2.$(OBJEXT)
 @LZMA_TRUE@am__objects_2 = lzma.$(OBJEXT)
 @ZSTD_TRUE@am__objects_3 = zstd.$(OBJEXT)
@@ -172,7 +172,8 @@ am_libdwfl_a_OBJECTS = dwfl_begin.$(OBJEXT) dwfl_end.$(OBJEXT) \
 	dwfl_module_addrsym.$(OBJEXT) \
 	dwfl_module_return_value_location.$(OBJEXT) \
 	dwfl_module_register_names.$(OBJEXT) \
-	dwfl_segment_report_module.$(OBJEXT) link_map.$(OBJEXT) \
+	dwfl_segment_report_module.$(OBJEXT) \
+	dwfl_set_sysroot.$(OBJEXT) link_map.$(OBJEXT) \
 	core-file.$(OBJEXT) open.$(OBJEXT) image-header.$(OBJEXT) \
 	dwfl_frame.$(OBJEXT) frame_unwind.$(OBJEXT) \
 	dwfl_frame_pc.$(OBJEXT) linux-pid-attach.$(OBJEXT) \
@@ -232,6 +233,7 @@ am__depfiles_remade = ./$(DEPDIR)/argp-std.Po ./$(DEPDIR)/bzip2.Po \
 	./$(DEPDIR)/dwfl_nextcu.Po ./$(DEPDIR)/dwfl_onesrcline.Po \
 	./$(DEPDIR)/dwfl_report_elf.Po \
 	./$(DEPDIR)/dwfl_segment_report_module.Po \
+	./$(DEPDIR)/dwfl_set_sysroot.Po \
 	./$(DEPDIR)/dwfl_validate_address.Po \
 	./$(DEPDIR)/dwfl_version.Po ./$(DEPDIR)/elf-from-memory.Po \
 	./$(DEPDIR)/find-debuginfo.Po ./$(DEPDIR)/frame_unwind.Po \
@@ -334,6 +336,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DEBUGINFOD_IMA_CERT_PATH = @DEBUGINFOD_IMA_CERT_PATH@
 DEBUGINFOD_URLS = @DEBUGINFOD_URLS@
 DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DLOCALEDIR='"${localedir}"'
@@ -435,6 +438,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+crypto_LIBS = @crypto_LIBS@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -454,6 +458,8 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+jsonc_CFLAGS = @jsonc_CFLAGS@
+jsonc_LIBS = @jsonc_LIBS@
 libarchive_CFLAGS = @libarchive_CFLAGS@
 libarchive_LIBS = @libarchive_LIBS@
 libcurl_CFLAGS = @libcurl_CFLAGS@
@@ -466,6 +472,7 @@ localedir = @localedir@
 localedir_c = @localedir_c@
 localedir_c_make = @localedir_c_make@
 localstatedir = @localstatedir@
+lzma_LIBS = @lzma_LIBS@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 obstack_LIBS = @obstack_LIBS@
@@ -476,6 +483,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+rpm_LIBS = @rpm_LIBS@
 runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
@@ -489,8 +497,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zip_LIBS = @zip_LIBS@
 zstd_LIBS = @zstd_LIBS@
-AM_CPPFLAGS = -I. -I$(srcdir) -I$(top_srcdir)/lib -I.. -I$(srcdir) \
-	-I$(srcdir)/../libelf -I$(srcdir)/../libebl \
+AM_CPPFLAGS = -iquote . -I$(srcdir) -I$(top_srcdir)/lib -I.. \
+	-I$(srcdir) -I$(srcdir)/../libelf -I$(srcdir)/../libebl \
 	-I$(srcdir)/../libdw -I$(srcdir)/../libdwelf \
 	-I$(builddir)/../debuginfod
 
@@ -570,10 +578,10 @@ libdwfl_a_SOURCES = dwfl_begin.c dwfl_end.c dwfl_error.c \
 	dwfl_module_getsym.c dwfl_module_addrname.c \
 	dwfl_module_addrsym.c dwfl_module_return_value_location.c \
 	dwfl_module_register_names.c dwfl_segment_report_module.c \
-	link_map.c core-file.c open.c image-header.c dwfl_frame.c \
-	frame_unwind.c dwfl_frame_pc.c linux-pid-attach.c \
-	linux-core-attach.c dwfl_frame_regs.c gzip.c \
-	debuginfod-client.c $(am__append_2) $(am__append_3) \
+	dwfl_set_sysroot.c link_map.c core-file.c open.c \
+	image-header.c dwfl_frame.c frame_unwind.c dwfl_frame_pc.c \
+	linux-pid-attach.c linux-core-attach.c dwfl_frame_regs.c \
+	gzip.c debuginfod-client.c $(am__append_2) $(am__append_3) \
 	$(am__append_4)
 libdwfl = $(libdw)
 libdw = ../libdw/libdw.so
@@ -685,6 +693,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_onesrcline.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_report_elf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_segment_report_module.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_set_sysroot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_validate_address.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_version.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf-from-memory.Po@am__quote@ # am--include-marker
@@ -923,6 +932,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/dwfl_onesrcline.Po
 	-rm -f ./$(DEPDIR)/dwfl_report_elf.Po
 	-rm -f ./$(DEPDIR)/dwfl_segment_report_module.Po
+	-rm -f ./$(DEPDIR)/dwfl_set_sysroot.Po
 	-rm -f ./$(DEPDIR)/dwfl_validate_address.Po
 	-rm -f ./$(DEPDIR)/dwfl_version.Po
 	-rm -f ./$(DEPDIR)/elf-from-memory.Po
@@ -1037,6 +1047,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/dwfl_onesrcline.Po
 	-rm -f ./$(DEPDIR)/dwfl_report_elf.Po
 	-rm -f ./$(DEPDIR)/dwfl_segment_report_module.Po
+	-rm -f ./$(DEPDIR)/dwfl_set_sysroot.Po
 	-rm -f ./$(DEPDIR)/dwfl_validate_address.Po
 	-rm -f ./$(DEPDIR)/dwfl_version.Po
 	-rm -f ./$(DEPDIR)/elf-from-memory.Po

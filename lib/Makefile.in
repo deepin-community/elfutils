@@ -117,8 +117,8 @@ libeu_a_AR = $(AR) $(ARFLAGS)
 libeu_a_LIBADD =
 am_libeu_a_OBJECTS = xasprintf.$(OBJEXT) xstrdup.$(OBJEXT) \
 	xstrndup.$(OBJEXT) xmalloc.$(OBJEXT) next_prime.$(OBJEXT) \
-	crc32.$(OBJEXT) crc32_file.$(OBJEXT) color.$(OBJEXT) \
-	error.$(OBJEXT) printversion.$(OBJEXT)
+	crc32.$(OBJEXT) crc32_file.$(OBJEXT) eu-search.$(OBJEXT) \
+	color.$(OBJEXT) error.$(OBJEXT) printversion.$(OBJEXT)
 libeu_a_OBJECTS = $(am_libeu_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -137,9 +137,10 @@ depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/color.Po ./$(DEPDIR)/crc32.Po \
 	./$(DEPDIR)/crc32_file.Po ./$(DEPDIR)/error.Po \
-	./$(DEPDIR)/next_prime.Po ./$(DEPDIR)/printversion.Po \
-	./$(DEPDIR)/xasprintf.Po ./$(DEPDIR)/xmalloc.Po \
-	./$(DEPDIR)/xstrdup.Po ./$(DEPDIR)/xstrndup.Po
+	./$(DEPDIR)/eu-search.Po ./$(DEPDIR)/next_prime.Po \
+	./$(DEPDIR)/printversion.Po ./$(DEPDIR)/xasprintf.Po \
+	./$(DEPDIR)/xmalloc.Po ./$(DEPDIR)/xstrdup.Po \
+	./$(DEPDIR)/xstrndup.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -202,6 +203,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DEBUGINFOD_IMA_CERT_PATH = @DEBUGINFOD_IMA_CERT_PATH@
 DEBUGINFOD_URLS = @DEBUGINFOD_URLS@
 DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DLOCALEDIR='"${localedir}"'
@@ -303,6 +305,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+crypto_LIBS = @crypto_LIBS@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -322,6 +325,8 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+jsonc_CFLAGS = @jsonc_CFLAGS@
+jsonc_LIBS = @jsonc_LIBS@
 libarchive_CFLAGS = @libarchive_CFLAGS@
 libarchive_LIBS = @libarchive_LIBS@
 libcurl_CFLAGS = @libcurl_CFLAGS@
@@ -334,6 +339,7 @@ localedir = @localedir@
 localedir_c = @localedir_c@
 localedir_c_make = @localedir_c_make@
 localstatedir = @localstatedir@
+lzma_LIBS = @lzma_LIBS@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 obstack_LIBS = @obstack_LIBS@
@@ -344,6 +350,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+rpm_LIBS = @rpm_LIBS@
 runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
@@ -357,7 +364,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zip_LIBS = @zip_LIBS@
 zstd_LIBS = @zstd_LIBS@
-AM_CPPFLAGS = -I. -I$(srcdir) -I$(top_srcdir)/lib -I.. \
+AM_CPPFLAGS = -iquote . -I$(srcdir) -I$(top_srcdir)/lib -I.. \
 	-I$(srcdir)/../libelf
 
 # Drop the 'u' flag that automake adds by default. It is incompatible
@@ -416,12 +423,13 @@ textrel_msg = echo "WARNING: TEXTREL found in '$@'"
 textrel_check = if $(READELF) -d $@ | grep -F -q TEXTREL; then $(textrel_found); fi
 noinst_LIBRARIES = libeu.a
 libeu_a_SOURCES = xasprintf.c xstrdup.c xstrndup.c xmalloc.c next_prime.c \
-		  crc32.c crc32_file.c \
+		  crc32.c crc32_file.c eu-search.c \
 		  color.c error.c printversion.c
 
 noinst_HEADERS = fixedsizehash.h libeu.h system.h dynamicsizehash.h list.h \
 		 eu-config.h color.h printversion.h bpf.h \
-		 atomics.h stdatomic-fbsd.h dynamicsizehash_concurrent.h
+		 atomics.h stdatomic-fbsd.h dynamicsizehash_concurrent.h \
+		 eu-search.h locks.h
 
 EXTRA_DIST = dynamicsizehash.c dynamicsizehash_concurrent.c
 all: all-am
@@ -477,6 +485,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc32.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc32_file.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/error.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eu-search.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/next_prime.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/printversion.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xasprintf.Po@am__quote@ # am--include-marker
@@ -632,6 +641,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/crc32.Po
 	-rm -f ./$(DEPDIR)/crc32_file.Po
 	-rm -f ./$(DEPDIR)/error.Po
+	-rm -f ./$(DEPDIR)/eu-search.Po
 	-rm -f ./$(DEPDIR)/next_prime.Po
 	-rm -f ./$(DEPDIR)/printversion.Po
 	-rm -f ./$(DEPDIR)/xasprintf.Po
@@ -687,6 +697,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/crc32.Po
 	-rm -f ./$(DEPDIR)/crc32_file.Po
 	-rm -f ./$(DEPDIR)/error.Po
+	-rm -f ./$(DEPDIR)/eu-search.Po
 	-rm -f ./$(DEPDIR)/next_prime.Po
 	-rm -f ./$(DEPDIR)/printversion.Po
 	-rm -f ./$(DEPDIR)/xasprintf.Po

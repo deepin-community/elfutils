@@ -96,7 +96,8 @@ bin_PROGRAMS = readelf$(EXEEXT) nm$(EXEEXT) size$(EXEEXT) \
 	addr2line$(EXEEXT) elfcmp$(EXEEXT) objdump$(EXEEXT) \
 	ranlib$(EXEEXT) strings$(EXEEXT) ar$(EXEEXT) unstrip$(EXEEXT) \
 	stack$(EXEEXT) elfcompress$(EXEEXT) elfclassify$(EXEEXT) \
-	srcfiles$(EXEEXT)
+	srcfiles$(EXEEXT) $(am__EXEEXT_1)
+@ENABLE_STACKTRACE_TRUE@am__append_2 = stacktrace
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
@@ -114,6 +115,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+@ENABLE_STACKTRACE_TRUE@am__EXEEXT_1 = stacktrace$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 LIBRARIES = $(noinst_LIBRARIES)
@@ -186,6 +188,8 @@ am_srcfiles_OBJECTS = srcfiles.$(OBJEXT)
 srcfiles_OBJECTS = $(am_srcfiles_OBJECTS)
 @BUILD_STATIC_FALSE@@LIBDEBUGINFOD_TRUE@am__DEPENDENCIES_4 = ../debuginfod/libdebuginfod.so
 @BUILD_STATIC_TRUE@@LIBDEBUGINFOD_TRUE@am__DEPENDENCIES_4 = ../debuginfod/libdebuginfod.a \
+@BUILD_STATIC_TRUE@@LIBDEBUGINFOD_TRUE@	$(am__DEPENDENCIES_1) \
+@BUILD_STATIC_TRUE@@LIBDEBUGINFOD_TRUE@	$(am__DEPENDENCIES_1) \
 @BUILD_STATIC_TRUE@@LIBDEBUGINFOD_TRUE@	$(am__DEPENDENCIES_1)
 srcfiles_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_2) \
 	$(libeu) $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -195,6 +199,12 @@ stack_OBJECTS = stack.$(OBJEXT)
 stack_DEPENDENCIES = $(libebl) $(am__DEPENDENCIES_2) \
 	$(am__DEPENDENCIES_3) $(libeu) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
+stacktrace_SOURCES = stacktrace.c
+stacktrace_OBJECTS = stacktrace.$(OBJEXT)
+@ENABLE_STACKTRACE_TRUE@stacktrace_DEPENDENCIES =  \
+@ENABLE_STACKTRACE_TRUE@	$(am__DEPENDENCIES_2) \
+@ENABLE_STACKTRACE_TRUE@	$(am__DEPENDENCIES_3) $(libeu) \
+@ENABLE_STACKTRACE_TRUE@	$(am__DEPENDENCIES_1)
 strings_SOURCES = strings.c
 strings_OBJECTS = strings.$(OBJEXT)
 strings_DEPENDENCIES = $(am__DEPENDENCIES_2) $(libeu) \
@@ -247,7 +257,6 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/addr2line.Po ./$(DEPDIR)/ar.Po \
@@ -258,8 +267,8 @@ am__depfiles_remade = ./$(DEPDIR)/addr2line.Po ./$(DEPDIR)/ar.Po \
 	./$(DEPDIR)/nm.Po ./$(DEPDIR)/objdump.Po ./$(DEPDIR)/ranlib.Po \
 	./$(DEPDIR)/readelf.Po ./$(DEPDIR)/size.Po \
 	./$(DEPDIR)/srcfiles.Po ./$(DEPDIR)/stack.Po \
-	./$(DEPDIR)/strings.Po ./$(DEPDIR)/strip.Po \
-	./$(DEPDIR)/unstrip.Po
+	./$(DEPDIR)/stacktrace.Po ./$(DEPDIR)/strings.Po \
+	./$(DEPDIR)/strip.Po ./$(DEPDIR)/unstrip.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -288,12 +297,12 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(libar_a_SOURCES) addr2line.c ar.c elfclassify.c elfcmp.c \
 	elfcompress.c elflint.c findtextrel.c nm.c objdump.c ranlib.c \
-	readelf.c size.c $(srcfiles_SOURCES) stack.c strings.c strip.c \
-	unstrip.c
+	readelf.c size.c $(srcfiles_SOURCES) stack.c stacktrace.c \
+	strings.c strip.c unstrip.c
 DIST_SOURCES = $(libar_a_SOURCES) addr2line.c ar.c elfclassify.c \
 	elfcmp.c elfcompress.c elflint.c findtextrel.c nm.c objdump.c \
 	ranlib.c readelf.c size.c $(srcfiles_SOURCES) stack.c \
-	strings.c strip.c unstrip.c
+	stacktrace.c strings.c strip.c unstrip.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -340,6 +349,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DEBUGINFOD_IMA_CERT_PATH = @DEBUGINFOD_IMA_CERT_PATH@
 DEBUGINFOD_URLS = @DEBUGINFOD_URLS@
 DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DLOCALEDIR='"${localedir}"' \
@@ -443,6 +453,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+crypto_LIBS = @crypto_LIBS@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -462,6 +473,8 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+jsonc_CFLAGS = @jsonc_CFLAGS@
+jsonc_LIBS = @jsonc_LIBS@
 libarchive_CFLAGS = @libarchive_CFLAGS@
 libarchive_LIBS = @libarchive_LIBS@
 libcurl_CFLAGS = @libcurl_CFLAGS@
@@ -474,6 +487,7 @@ localedir = @localedir@
 localedir_c = @localedir_c@
 localedir_c_make = @localedir_c_make@
 localstatedir = @localstatedir@
+lzma_LIBS = @lzma_LIBS@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 obstack_LIBS = @obstack_LIBS@
@@ -484,6 +498,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+rpm_LIBS = @rpm_LIBS@
 runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
@@ -497,7 +512,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zip_LIBS = @zip_LIBS@
 zstd_LIBS = @zstd_LIBS@
-AM_CPPFLAGS = -I. -I$(srcdir) -I$(top_srcdir)/lib -I.. \
+AM_CPPFLAGS = -iquote . -I$(srcdir) -I$(top_srcdir)/lib -I.. \
 	-I$(srcdir)/../libelf -I$(srcdir)/../libebl \
 	-I$(srcdir)/../libdw -I$(srcdir)/../libdwelf \
 	-I$(srcdir)/../libdwfl -I$(srcdir)/../libasm -I../debuginfod
@@ -557,6 +572,7 @@ textrel_msg = echo "WARNING: TEXTREL found in '$@'"
 @FATAL_TEXTREL_FALSE@textrel_found = $(textrel_msg)
 @FATAL_TEXTREL_TRUE@textrel_found = $(textrel_msg); exit 1
 textrel_check = if $(READELF) -d $@ | grep -F -q TEXTREL; then $(textrel_found); fi
+DEFAULT_INCLUDES = 
 AM_LDFLAGS = -Wl,-rpath-link,../libelf:../libdw $(STACK_USAGE_NO_ERROR)
 noinst_LIBRARIES = libar.a
 libar_a_SOURCES = arlib.c arlib2.c arlib-argp.c
@@ -571,7 +587,7 @@ bin_SCRIPTS = make-debug-archive
 @BUILD_STATIC_FALSE@@LIBDEBUGINFOD_FALSE@libdebuginfod = 
 @BUILD_STATIC_FALSE@@LIBDEBUGINFOD_TRUE@libdebuginfod = ../debuginfod/libdebuginfod.so
 @BUILD_STATIC_TRUE@@LIBDEBUGINFOD_FALSE@libdebuginfod = 
-@BUILD_STATIC_TRUE@@LIBDEBUGINFOD_TRUE@libdebuginfod = ../debuginfod/libdebuginfod.a -lpthread $(libcurl_LIBS)
+@BUILD_STATIC_TRUE@@LIBDEBUGINFOD_TRUE@libdebuginfod = ../debuginfod/libdebuginfod.a -lpthread $(libcurl_LIBS) $(crypto_LIBS) $(jsonc_LIBS)
 libebl = ../libebl/libebl.a ../backends/libebl_backends.a ../libcpu/libcpu.a
 libeu = ../lib/libeu.a
 @DEMANGLE_TRUE@demanglelib = -lstdc++
@@ -603,6 +619,7 @@ strings_LDADD = $(libelf) $(libeu) $(argp_LDADD)
 ar_LDADD = libar.a $(libelf) $(libeu) $(argp_LDADD) $(obstack_LIBS)
 unstrip_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD)
 stack_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD) $(demanglelib)
+@ENABLE_STACKTRACE_TRUE@stacktrace_LDADD = $(libelf) $(libdw) $(libeu) $(argp_LDADD)
 elfcompress_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD)
 elfclassify_LDADD = $(libelf) $(libdw) $(libeu) $(argp_LDADD)
 srcfiles_SOURCES = srcfiles.cxx
@@ -748,6 +765,10 @@ stack$(EXEEXT): $(stack_OBJECTS) $(stack_DEPENDENCIES) $(EXTRA_stack_DEPENDENCIE
 	@rm -f stack$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(stack_OBJECTS) $(stack_LDADD) $(LIBS)
 
+stacktrace$(EXEEXT): $(stacktrace_OBJECTS) $(stacktrace_DEPENDENCIES) $(EXTRA_stacktrace_DEPENDENCIES) 
+	@rm -f stacktrace$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(stacktrace_OBJECTS) $(stacktrace_LDADD) $(LIBS)
+
 strings$(EXEEXT): $(strings_OBJECTS) $(strings_DEPENDENCIES) $(EXTRA_strings_DEPENDENCIES) 
 	@rm -f strings$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(strings_OBJECTS) $(strings_LDADD) $(LIBS)
@@ -833,6 +854,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/size.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/srcfiles.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stack.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stacktrace.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strings.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strip.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unstrip.Po@am__quote@ # am--include-marker
@@ -1016,6 +1038,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/size.Po
 	-rm -f ./$(DEPDIR)/srcfiles.Po
 	-rm -f ./$(DEPDIR)/stack.Po
+	-rm -f ./$(DEPDIR)/stacktrace.Po
 	-rm -f ./$(DEPDIR)/strings.Po
 	-rm -f ./$(DEPDIR)/strip.Po
 	-rm -f ./$(DEPDIR)/unstrip.Po
@@ -1081,6 +1104,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/size.Po
 	-rm -f ./$(DEPDIR)/srcfiles.Po
 	-rm -f ./$(DEPDIR)/stack.Po
+	-rm -f ./$(DEPDIR)/stacktrace.Po
 	-rm -f ./$(DEPDIR)/strings.Po
 	-rm -f ./$(DEPDIR)/strip.Po
 	-rm -f ./$(DEPDIR)/unstrip.Po

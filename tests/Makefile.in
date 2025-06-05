@@ -95,10 +95,11 @@ check_PROGRAMS = arextract$(EXEEXT) arsymtest$(EXEEXT) \
 	update2$(EXEEXT) update3$(EXEEXT) update4$(EXEEXT) \
 	test-nlist$(EXEEXT) show-die-info$(EXEEXT) get-files$(EXEEXT) \
 	next-files$(EXEEXT) get-lines$(EXEEXT) next-lines$(EXEEXT) \
-	get-pubnames$(EXEEXT) get-aranges$(EXEEXT) allfcts$(EXEEXT) \
-	line2addr$(EXEEXT) addrscopes$(EXEEXT) funcscopes$(EXEEXT) \
-	show-abbrev$(EXEEXT) hash$(EXEEXT) newscn$(EXEEXT) \
-	ecp$(EXEEXT) dwflmodtest$(EXEEXT) find-prologues$(EXEEXT) \
+	get-pubnames$(EXEEXT) get-files-define-file$(EXEEXT) \
+	get-aranges$(EXEEXT) allfcts$(EXEEXT) line2addr$(EXEEXT) \
+	addrscopes$(EXEEXT) funcscopes$(EXEEXT) show-abbrev$(EXEEXT) \
+	hash$(EXEEXT) newscn$(EXEEXT) ecp$(EXEEXT) \
+	dwflmodtest$(EXEEXT) find-prologues$(EXEEXT) \
 	funcretval$(EXEEXT) allregs$(EXEEXT) rdwrmmap$(EXEEXT) \
 	dwfl-bug-addr-overflow$(EXEEXT) arls$(EXEEXT) \
 	dwfl-bug-fd-leak$(EXEEXT) dwfl-addr-sect$(EXEEXT) \
@@ -119,7 +120,7 @@ check_PROGRAMS = arextract$(EXEEXT) arsymtest$(EXEEXT) \
 	deleted$(EXEEXT) deleted-lib.so$(EXEEXT) \
 	aggregate_size$(EXEEXT) peel_type$(EXEEXT) vdsosyms$(EXEEXT) \
 	getsrc_die$(EXEEXT) strptr$(EXEEXT) newdata$(EXEEXT) \
-	elfstrtab$(EXEEXT) dwfl-proc-attach$(EXEEXT) \
+	newzdata$(EXEEXT) elfstrtab$(EXEEXT) dwfl-proc-attach$(EXEEXT) \
 	elfshphehdr$(EXEEXT) elfstrmerge$(EXEEXT) \
 	dwelfgnucompressed$(EXEEXT) elfgetchdr$(EXEEXT) \
 	elfgetzdata$(EXEEXT) elfputzdata$(EXEEXT) zstrptr$(EXEEXT) \
@@ -135,7 +136,8 @@ check_PROGRAMS = arextract$(EXEEXT) arsymtest$(EXEEXT) \
 	nvidia_extended_linemap_libdw$(EXEEXT) \
 	elf-print-reloc-syms$(EXEEXT) cu-dwp-section-info$(EXEEXT) \
 	declfiles$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
-	$(am__EXEEXT_3) $(am__EXEEXT_4)
+	$(am__EXEEXT_3) $(am__EXEEXT_4) \
+	funcretval_test_struct$(EXEEXT)
 @BIARCH_TRUE@am__append_3 = backtrace-child-biarch
 TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile$(EXEEXT) \
 	test-nlist$(EXEEXT) run-ar-N.sh update1$(EXEEXT) \
@@ -161,10 +163,9 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile$(EXEEXT) \
 	run-strings-test.sh run-funcscopes.sh run-find-prologues.sh \
 	run-allregs.sh run-addrcfi.sh run-dwarfcfi.sh run-nm-syms.sh \
 	run-nm-self.sh run-readelf-self.sh run-readelf-info-plus.sh \
-	run-srcfiles-self.sh run-readelf-compressed.sh \
-	run-readelf-const-values.sh run-varlocs-self.sh \
-	run-exprlocs-self.sh run-readelf-test1.sh run-readelf-test2.sh \
-	run-readelf-test3.sh run-readelf-test4.sh \
+	run-readelf-compressed.sh run-readelf-const-values.sh \
+	run-varlocs-self.sh run-exprlocs-self.sh run-readelf-test1.sh \
+	run-readelf-test2.sh run-readelf-test3.sh run-readelf-test4.sh \
 	run-readelf-twofiles.sh run-readelf-macro.sh \
 	run-readelf-loc.sh run-readelf-ranges.sh \
 	run-readelf-aranges.sh run-readelf-line.sh run-readelf-z.sh \
@@ -188,8 +189,9 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile$(EXEEXT) \
 	run-dwfl-report-offline-memory.sh run-addr2line-C-test.sh \
 	run-addr2line-i-test.sh run-addr2line-i-lex-test.sh \
 	run-addr2line-i-demangle-test.sh \
-	run-addr2line-alt-debugpath.sh run-varlocs.sh run-exprlocs.sh \
-	run-varlocs-vars.sh run-funcretval.sh run-backtrace-native.sh \
+	run-addr2line-alt-debugpath.sh run-funcretval-struct.sh \
+	run-varlocs.sh run-exprlocs.sh run-varlocs-vars.sh \
+	run-funcretval.sh run-backtrace-native.sh \
 	run-backtrace-data.sh run-backtrace-dwarf.sh \
 	run-backtrace-native-biarch.sh run-backtrace-native-core.sh \
 	run-backtrace-native-core-biarch.sh \
@@ -208,12 +210,13 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile$(EXEEXT) \
 	run-allfcts-multi.sh run-deleted.sh run-linkmap-cut.sh \
 	run-aggregate-size.sh run-peel-type.sh vdsosyms$(EXEEXT) \
 	run-readelf-A.sh run-getsrc-die.sh run-strptr.sh \
-	newdata$(EXEEXT) elfstrtab$(EXEEXT) dwfl-proc-attach$(EXEEXT) \
-	elfshphehdr$(EXEEXT) run-lfs-symbols.sh \
-	run-dwelfgnucompressed.sh run-elfgetchdr.sh run-elfgetzdata.sh \
-	run-elfputzdata.sh run-zstrptr.sh run-compress-test.sh \
-	run-readelf-zdebug.sh run-readelf-zdebug-rel.sh \
-	emptyfile$(EXEEXT) vendorelf$(EXEEXT) fillfile$(EXEEXT) \
+	newdata$(EXEEXT) newzdata$(EXEEXT) elfstrtab$(EXEEXT) \
+	dwfl-proc-attach$(EXEEXT) elfshphehdr$(EXEEXT) \
+	run-lfs-symbols.sh run-dwelfgnucompressed.sh run-elfgetchdr.sh \
+	run-elfgetzdata.sh run-elfputzdata.sh run-zstrptr.sh \
+	run-compress-test.sh run-readelf-zdebug.sh \
+	run-readelf-zdebug-rel.sh emptyfile$(EXEEXT) \
+	vendorelf$(EXEEXT) fillfile$(EXEEXT) \
 	dwarf_default_lower_bound$(EXEEXT) run-dwarf-die-addr-die.sh \
 	run-get-units-invalid.sh run-get-units-split.sh \
 	run-attr-integrate-skel.sh run-all-dwarf-ranges.sh \
@@ -235,14 +238,16 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile$(EXEEXT) \
 	run-nvidia-extended-linemap-readelf.sh \
 	run-readelf-dw-form-indirect.sh run-strip-largealign.sh \
 	run-readelf-Dd.sh run-dwfl-core-noncontig.sh \
-	run-cu-dwp-section-info.sh run-declfiles.sh $(am__append_4) \
-	$(am__append_5) $(am__append_7) $(am__append_8) \
-	$(am__append_10)
-@LZMA_TRUE@am__append_4 = run-readelf-s.sh run-dwflsyms.sh
+	run-cu-dwp-section-info.sh run-declfiles.sh run-sysroot.sh \
+	$(am__append_4) $(am__append_5) $(am__append_7) \
+	$(am__append_8) $(am__append_9) $(am__append_11) \
+	run-funcretval-struct-native.sh
+@LZMA_TRUE@am__append_4 = run-readelf-s.sh run-dwflsyms.sh run-debuginfod-seekable.sh
 @HAVE_ZSTD_TRUE@am__append_5 = run-readelf-compressed-zstd.sh
 @DEBUGINFOD_TRUE@am__append_6 = debuginfod_build_id_find
 # With the dummy delegation doesn't work
-@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@am__append_7 = run-debuginfod-dlopen.sh \
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@am__append_7 = run-srcfiles-self.sh \
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-dlopen.sh \
 @DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-artifact-running.sh \
 @DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-fd-prefetch-caches.sh \
 @DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-regex.sh \
@@ -262,18 +267,22 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile$(EXEEXT) \
 @DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-federation-sqlite.sh \
 @DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-federation-link.sh \
 @DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@         run-debuginfod-percent-escape.sh \
-@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@         run-debuginfod-x-forwarded-for.sh \
-@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@         run-debuginfod-response-headers.sh \
-@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@         run-debuginfod-extraction-passive.sh \
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-x-forwarded-for.sh \
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-response-headers.sh \
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-extraction-passive.sh \
 @DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-webapi-concurrency.sh \
 @DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-section.sh \
-@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-IXr.sh
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-IXr.sh \
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-client-profile.sh \
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-find-metadata.sh \
+@DEBUGINFOD_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	 run-debuginfod-longsource.sh
 
 # Will crash on too old libmicrohttpd
 # Too many open file descriptors confuses libmicrohttpd < 0.9.51
 @DEBUGINFOD_TRUE@@OLD_LIBMICROHTTPD_FALSE@am__append_8 = run-debuginfod-federation-metrics.sh
-@HAVE_CXX11_TRUE@am__append_9 = funcretval_test++11
-@HAVE_CXX11_TRUE@am__append_10 = run-funcretval++11.sh
+@DEBUGINFOD_TRUE@@ENABLE_IMA_VERIFICATION_TRUE@am__append_9 = run-debuginfod-ima-verification.sh
+@HAVE_CXX11_TRUE@am__append_10 = funcretval_test++11
+@HAVE_CXX11_TRUE@am__append_11 = run-funcretval++11.sh
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
@@ -302,7 +311,7 @@ addrcfi_OBJECTS = addrcfi.$(OBJEXT)
 am__DEPENDENCIES_1 =
 @BUILD_STATIC_FALSE@am__DEPENDENCIES_2 = ../libelf/libelf.so
 @BUILD_STATIC_TRUE@am__DEPENDENCIES_2 = ../libelf/libelf.a \
-@BUILD_STATIC_TRUE@	$(am__DEPENDENCIES_1)
+@BUILD_STATIC_TRUE@	$(am__DEPENDENCIES_1) $(libeu)
 @BUILD_STATIC_FALSE@am__DEPENDENCIES_3 = ../libdw/libdw.so
 @BUILD_STATIC_TRUE@am__DEPENDENCIES_3 = ../libdw/libdw.a \
 @BUILD_STATIC_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2) \
@@ -498,7 +507,7 @@ dwfl_report_offline_memory_SOURCES = dwfl-report-offline-memory.c
 dwfl_report_offline_memory_OBJECTS =  \
 	dwfl-report-offline-memory.$(OBJEXT)
 dwfl_report_offline_memory_DEPENDENCIES = $(libeu) \
-	$(am__DEPENDENCIES_3)
+	$(am__DEPENDENCIES_3) $(am__DEPENDENCIES_2)
 dwfl_report_segment_contiguous_SOURCES =  \
 	dwfl-report-segment-contiguous.c
 dwfl_report_segment_contiguous_OBJECTS =  \
@@ -570,6 +579,9 @@ am__funcretval_test__11_SOURCES_DIST = funcretval_test++11.cxx
 @HAVE_CXX11_TRUE@	funcretval_test++11.$(OBJEXT)
 funcretval_test__11_OBJECTS = $(am_funcretval_test__11_OBJECTS)
 funcretval_test__11_LDADD = $(LDADD)
+am_funcretval_test_struct_OBJECTS = funcretval_test_struct.$(OBJEXT)
+funcretval_test_struct_OBJECTS = $(am_funcretval_test_struct_OBJECTS)
+funcretval_test_struct_LDADD = $(LDADD)
 funcscopes_SOURCES = funcscopes.c
 funcscopes_OBJECTS = funcscopes.$(OBJEXT)
 funcscopes_DEPENDENCIES = $(libeu) $(am__DEPENDENCIES_3) \
@@ -580,6 +592,10 @@ get_aranges_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_2)
 get_files_SOURCES = get-files.c
 get_files_OBJECTS = get-files.$(OBJEXT)
 get_files_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_2)
+get_files_define_file_SOURCES = get-files-define-file.c
+get_files_define_file_OBJECTS = get-files-define-file.$(OBJEXT)
+get_files_define_file_DEPENDENCIES = $(am__DEPENDENCIES_3) \
+	$(am__DEPENDENCIES_2)
 get_lines_SOURCES = get-lines.c
 get_lines_OBJECTS = get-lines.$(OBJEXT)
 get_lines_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_2)
@@ -626,6 +642,9 @@ newfile_DEPENDENCIES = $(am__DEPENDENCIES_2)
 newscn_SOURCES = newscn.c
 newscn_OBJECTS = newscn.$(OBJEXT)
 newscn_DEPENDENCIES = $(am__DEPENDENCIES_2)
+newzdata_SOURCES = newzdata.c
+newzdata_OBJECTS = newzdata.$(OBJEXT)
+newzdata_DEPENDENCIES = $(am__DEPENDENCIES_2)
 next_files_SOURCES = next-files.c
 next_files_OBJECTS = next-files.$(OBJEXT)
 next_files_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_2)
@@ -798,8 +817,10 @@ am__depfiles_remade = ./$(DEPDIR)/addrcfi.Po ./$(DEPDIR)/addrscopes.Po \
 	./$(DEPDIR)/elfstrmerge.Po ./$(DEPDIR)/elfstrtab.Po \
 	./$(DEPDIR)/emptyfile.Po ./$(DEPDIR)/fillfile.Po \
 	./$(DEPDIR)/find-prologues.Po ./$(DEPDIR)/funcretval.Po \
-	./$(DEPDIR)/funcretval_test++11.Po ./$(DEPDIR)/funcscopes.Po \
-	./$(DEPDIR)/get-aranges.Po ./$(DEPDIR)/get-files.Po \
+	./$(DEPDIR)/funcretval_test++11.Po \
+	./$(DEPDIR)/funcretval_test_struct.Po \
+	./$(DEPDIR)/funcscopes.Po ./$(DEPDIR)/get-aranges.Po \
+	./$(DEPDIR)/get-files-define-file.Po ./$(DEPDIR)/get-files.Po \
 	./$(DEPDIR)/get-lines.Po ./$(DEPDIR)/get-pubnames.Po \
 	./$(DEPDIR)/get-units-invalid.Po \
 	./$(DEPDIR)/get-units-split.Po ./$(DEPDIR)/getphdrnum.Po \
@@ -807,8 +828,9 @@ am__depfiles_remade = ./$(DEPDIR)/addrcfi.Po ./$(DEPDIR)/addrscopes.Po \
 	./$(DEPDIR)/leb128.Po ./$(DEPDIR)/line2addr.Po \
 	./$(DEPDIR)/low_high_pc.Po ./$(DEPDIR)/msg_tst.Po \
 	./$(DEPDIR)/newdata.Po ./$(DEPDIR)/newfile.Po \
-	./$(DEPDIR)/newscn.Po ./$(DEPDIR)/next-files.Po \
-	./$(DEPDIR)/next-lines.Po ./$(DEPDIR)/next_cfi.Po \
+	./$(DEPDIR)/newscn.Po ./$(DEPDIR)/newzdata.Po \
+	./$(DEPDIR)/next-files.Po ./$(DEPDIR)/next-lines.Po \
+	./$(DEPDIR)/next_cfi.Po \
 	./$(DEPDIR)/nvidia_extended_linemap_libdw.Po \
 	./$(DEPDIR)/peel_type.Po ./$(DEPDIR)/rdwrmmap.Po \
 	./$(DEPDIR)/read_unaligned.Po ./$(DEPDIR)/rerequest_tag.Po \
@@ -877,11 +899,12 @@ SOURCES = addrcfi.c addrscopes.c addsections.c aggregate_size.c \
 	elf-print-reloc-syms.c elfcopy.c elfgetchdr.c elfgetzdata.c \
 	elfputzdata.c elfrdwrnop.c elfshphehdr.c elfstrmerge.c \
 	elfstrtab.c emptyfile.c fillfile.c find-prologues.c \
-	funcretval.c $(funcretval_test__11_SOURCES) funcscopes.c \
-	get-aranges.c get-files.c get-lines.c get-pubnames.c \
+	funcretval.c $(funcretval_test__11_SOURCES) \
+	$(funcretval_test_struct_SOURCES) funcscopes.c get-aranges.c \
+	get-files.c get-files-define-file.c get-lines.c get-pubnames.c \
 	get-units-invalid.c get-units-split.c getphdrnum.c \
 	getsrc_die.c hash.c leb128.c line2addr.c low_high_pc.c \
-	msg_tst.c newdata.c newfile.c newscn.c next-files.c \
+	msg_tst.c newdata.c newfile.c newscn.c newzdata.c next-files.c \
 	next-lines.c next_cfi.c nvidia_extended_linemap_libdw.c \
 	peel_type.c rdwrmmap.c read_unaligned.c rerequest_tag.c \
 	saridx.c scnnames.c sectiondump.c show-abbrev.c \
@@ -911,19 +934,19 @@ DIST_SOURCES = addrcfi.c addrscopes.c addsections.c aggregate_size.c \
 	elfputzdata.c elfrdwrnop.c elfshphehdr.c elfstrmerge.c \
 	elfstrtab.c emptyfile.c fillfile.c find-prologues.c \
 	funcretval.c $(am__funcretval_test__11_SOURCES_DIST) \
-	funcscopes.c get-aranges.c get-files.c get-lines.c \
-	get-pubnames.c get-units-invalid.c get-units-split.c \
-	getphdrnum.c getsrc_die.c hash.c leb128.c line2addr.c \
-	low_high_pc.c msg_tst.c newdata.c newfile.c newscn.c \
-	next-files.c next-lines.c next_cfi.c \
-	nvidia_extended_linemap_libdw.c peel_type.c rdwrmmap.c \
-	read_unaligned.c rerequest_tag.c saridx.c scnnames.c \
-	sectiondump.c show-abbrev.c show-die-info.c showptable.c \
-	strptr.c system-elf-gelf-test.c system-elf-libelf-test.c \
-	test-elf_cntl_gelf_getshdr.c test-flag-nobits.c test-nlist.c \
-	typeiter.c typeiter2.c unit-info.c update1.c update2.c \
-	update3.c update4.c varlocs.c vdsosyms.c vendorelf.c \
-	xlate_notes.c zstrptr.c
+	$(funcretval_test_struct_SOURCES) funcscopes.c get-aranges.c \
+	get-files.c get-files-define-file.c get-lines.c get-pubnames.c \
+	get-units-invalid.c get-units-split.c getphdrnum.c \
+	getsrc_die.c hash.c leb128.c line2addr.c low_high_pc.c \
+	msg_tst.c newdata.c newfile.c newscn.c newzdata.c next-files.c \
+	next-lines.c next_cfi.c nvidia_extended_linemap_libdw.c \
+	peel_type.c rdwrmmap.c read_unaligned.c rerequest_tag.c \
+	saridx.c scnnames.c sectiondump.c show-abbrev.c \
+	show-die-info.c showptable.c strptr.c system-elf-gelf-test.c \
+	system-elf-libelf-test.c test-elf_cntl_gelf_getshdr.c \
+	test-flag-nobits.c test-nlist.c typeiter.c typeiter2.c \
+	unit-info.c update1.c update2.c update3.c update4.c varlocs.c \
+	vdsosyms.c vendorelf.c xlate_notes.c zstrptr.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1176,6 +1199,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DEBUGINFOD_IMA_CERT_PATH = @DEBUGINFOD_IMA_CERT_PATH@
 DEBUGINFOD_URLS = @DEBUGINFOD_URLS@
 DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DLOCALEDIR='"${localedir}"'
@@ -1277,6 +1301,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+crypto_LIBS = @crypto_LIBS@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -1296,6 +1321,8 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+jsonc_CFLAGS = @jsonc_CFLAGS@
+jsonc_LIBS = @jsonc_LIBS@
 libarchive_CFLAGS = @libarchive_CFLAGS@
 libarchive_LIBS = @libarchive_LIBS@
 libcurl_CFLAGS = @libcurl_CFLAGS@
@@ -1308,6 +1335,7 @@ localedir = @localedir@
 localedir_c = @localedir_c@
 localedir_c_make = @localedir_c_make@
 localstatedir = @localstatedir@
+lzma_LIBS = @lzma_LIBS@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 obstack_LIBS = @obstack_LIBS@
@@ -1318,6 +1346,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+rpm_LIBS = @rpm_LIBS@
 runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
@@ -1331,7 +1360,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zip_LIBS = @zip_LIBS@
 zstd_LIBS = @zstd_LIBS@
-AM_CPPFLAGS = -I. -I$(srcdir) -I$(top_srcdir)/lib -I.. \
+AM_CPPFLAGS = -iquote . -I$(srcdir) -I$(top_srcdir)/lib -I.. \
 	-I$(top_srcdir)/libasm -I$(top_srcdir)/libdw \
 	-I$(top_srcdir)/libdwfl -I$(top_srcdir)/libdwelf \
 	-I$(top_srcdir)/libebl -I$(top_srcdir)/libelf \
@@ -1412,6 +1441,7 @@ asm_TESTS = asm-tst1 asm-tst2 asm-tst3 asm-tst4 asm-tst5 \
 # minimal CFLAGS. But add sanitizers if in use.
 @USE_ADDRESS_SANITIZER_TRUE@EXTRA_NLIST_CFLAGS = -fsanitize=address
 @HAVE_CXX11_TRUE@funcretval_test__11_SOURCES = funcretval_test++11.cxx
+funcretval_test_struct_SOURCES = funcretval_test_struct.c
 EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-ar.sh \
 	     run-ar-N.sh \
 	     run-show-die-info.sh run-get-files.sh run-get-lines.sh \
@@ -1442,7 +1472,7 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-ar.sh \
 	     hello_i386.ko.bz2 hello_x86_64.ko.bz2 \
 	     hello_ppc64.ko.bz2 hello_s390.ko.bz2 hello_aarch64.ko.bz2 \
 	     hello_m68k.ko.bz2 hello_riscv64.ko.bz2 hello_csky.ko.bz2 \
-	     hello_arc_hs4.ko.bz2 \
+	     hello_arc_hs4.ko.bz2 hello_hexagon.ko.bz2 \
 	     run-unstrip-test.sh run-unstrip-test2.sh \
 	     testfile-info-link.bz2 testfile-info-link.debuginfo.bz2 \
 	     testfile-info-link.stripped.bz2 run-unstrip-test3.sh \
@@ -1500,7 +1530,7 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-ar.sh \
 	     testfile46.bz2 testfile47.bz2 testfile48.bz2 testfile48.debug.bz2 \
 	     testfile49.bz2 testfile50.bz2 testfile51.bz2 \
 	     testfile-macros-0xff.bz2 \
-	     run-readelf-macro.sh testfilemacro.bz2 \
+	     run-readelf-macro.sh testfilemacro.bz2 testfileclangmacro.bz2 \
 	     run-readelf-loc.sh testfileloc.bz2 \
 	     splitdwarf4-not-split4.dwo.bz2 \
 	     testfile-splitdwarf4-not-split4.debug.bz2 \
@@ -1606,6 +1636,7 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-ar.sh \
 	     testfile_aarch64_core.bz2 testfile_i686_core.bz2 \
 	     addrx_constx-4.dwo.bz2 addrx_constx-5.dwo.bz2 \
 	     testfile-addrx_constx-4.bz2 testfile-addrx_constx-5.bz2 \
+	     run-funcretval-struct.sh funcretval_test_struct_riscv.bz2 \
 	     run-funcretval.sh funcretval_test.c funcretval_test_aarch64.bz2 \
 	     run-backtrace-data.sh run-backtrace-dwarf.sh cleanup-13.c \
 	     run-backtrace-native.sh run-backtrace-native-biarch.sh \
@@ -1721,6 +1752,9 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-ar.sh \
              run-debuginfod-webapi-concurrency.sh \
 	     run-debuginfod-section.sh \
 	     run-debuginfod-IXr.sh \
+	     run-debuginfod-ima-verification.sh \
+	     run-debuginfod-find-metadata.sh \
+	     run-debuginfod-longsource.sh \
 	     debuginfod-rpms/fedora30/hello2-1.0-2.src.rpm \
 	     debuginfod-rpms/fedora30/hello2-1.0-2.x86_64.rpm \
 	     debuginfod-rpms/fedora30/hello2-debuginfo-1.0-2.x86_64.rpm \
@@ -1744,25 +1778,44 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-ar.sh \
 	     debuginfod-rpms/rhel7/hello2-debuginfo-1.0-2.x86_64.rpm \
 	     debuginfod-rpms/rhel7/hello2-two-1.0-2.x86_64.rpm \
 	     debuginfod-rpms/rhel7/hello2-two-1.0-2.x86_64.rpm \
+	     debuginfod-rpms/seekable-xz/compressme-seekable-xz-1.0-1.src.rpm \
+	     debuginfod-rpms/seekable-xz/compressme-seekable-xz-1.0-1.x86_64.rpm \
+	     debuginfod-rpms/seekable-xz/compressme-seekable-xz-debuginfo-1.0-1.x86_64.rpm \
+	     debuginfod-rpms/seekable-xz/compressme-seekable-xz-debugsource-1.0-1.x86_64.rpm \
+             debuginfod-ima/koji/arch/hello-2.10-9.fc38.x86_64.rpm \
+             debuginfod-ima/koji/data/sigcache/keyid/arch/hello-2.10-9.fc38.x86_64.rpm.sig \
+	     debuginfod-ima/koji/fedora-38-ima.pem \
+	     debuginfod-ima/rhel9/hello2-1.0-1.x86_64.rpm \
+	     debuginfod-ima/rhel9/imacert.der \
 	     debuginfod-debs/hithere-dbgsym_1.0-1_amd64.ddeb \
 	     debuginfod-debs/hithere_1.0-1.debian.tar.xz \
 	     debuginfod-debs/hithere_1.0-1.dsc \
 	     debuginfod-debs/hithere_1.0-1_amd64.deb \
 	     debuginfod-debs/hithere_1.0.orig.tar.gz \
+	     debuginfod-debs/seekable-xz/compressme-seekable-xz_1.0-1_amd64.deb \
+	     debuginfod-debs/seekable-xz/compressme-seekable-xz_1.0-1.debian.tar.xz \
+	     debuginfod-debs/seekable-xz/compressme-seekable-xz_1.0-1.dsc \
+	     debuginfod-debs/seekable-xz/compressme-seekable-xz_1.0.orig.tar.xz \
+	     debuginfod-debs/seekable-xz/compressme-seekable-xz-dbgsym_1.0-1_amd64.deb \
 	     debuginfod-tars/hello-1-1-x86_64.pkg.tar.xz \
 	     debuginfod-tars/hello-debug-1-1-x86_64.pkg.tar.bz2 \
 	     debuginfod-tars/pacman-sources/PKGBUILD \
 	     debuginfod-tars/pacman-sources/README.md \
 	     debuginfod-tars/pacman-sources/hello.c \
+	     debuginfod-tars/bighello.tar \
+	     debuginfod-tars/bighello-sources/bighello.c \
+	     debuginfod-tars/bighello-sources/bighello.h \
 	     run-pt_gnu_prop-tests.sh \
 	     testfile_pt_gnu_prop.bz2 testfile_pt_gnu_prop32.bz2 \
 	     run-getphdrnum.sh testfile-phdrs.elf.bz2 \
 	     run-test-includes.sh run-low_high_pc-dw-form-indirect.sh \
+	     run-debuginfod-client-profile.sh \
 	     run-readelf-dw-form-indirect.sh testfile-dw-form-indirect.bz2 \
 	     run-nvidia-extended-linemap-libdw.sh run-nvidia-extended-linemap-readelf.sh \
 	     testfile_nvidia_linemap.bz2 \
 	     testfile-largealign.o.bz2 run-strip-largealign.sh \
 	     run-funcretval++11.sh \
+	     run-funcretval-struct-native.sh \
 	     test-ar-duplicates.a.bz2 \
 	     run-dwfl-core-noncontig.sh testcore-noncontig.bz2 \
 	     testfile-dwarf5-line-clang.bz2 \
@@ -1774,7 +1827,9 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-ar.sh \
 	     testfile-dwp-5-cu-index-overflow.dwp.bz2 \
 	     testfile-dwp-4-cu-index-overflow.bz2 \
 	     testfile-dwp-4-cu-index-overflow.dwp.bz2 \
-	     testfile-dwp-cu-index-overflow.source
+	     testfile-dwp-cu-index-overflow.source \
+	     testfile-define-file.bz2 \
+	     testfile-sysroot.tar.bz2 run-sysroot.sh run-debuginfod-seekable.sh
 
 @USE_VALGRIND_TRUE@valgrind_cmd = valgrind -q --leak-check=full --error-exitcode=1
 installed_TESTS_ENVIRONMENT = libdir='$(DESTDIR)$(libdir)'; \
@@ -1813,7 +1868,7 @@ LOG_COMPILER = $(abs_srcdir)/test-wrapper.sh \
 @BUILD_STATIC_FALSE@libdw = ../libdw/libdw.so
 @BUILD_STATIC_TRUE@libdw = ../libdw/libdw.a -lz $(zip_LIBS) $(libelf) $(libebl) -ldl -lpthread
 @BUILD_STATIC_FALSE@libelf = ../libelf/libelf.so
-@BUILD_STATIC_TRUE@libelf = ../libelf/libelf.a -lz $(zstd_LIBS)
+@BUILD_STATIC_TRUE@libelf = ../libelf/libelf.a -lz $(zstd_LIBS) $(libeu)
 @BUILD_STATIC_FALSE@libasm = ../libasm/libasm.so
 @BUILD_STATIC_TRUE@libasm = ../libasm/libasm.a
 libebl = ../libebl/libebl.a ../backends/libebl_backends.a ../libcpu/libcpu.a
@@ -1842,6 +1897,7 @@ show_abbrev_LDADD = $(libdw) $(libelf)
 get_lines_LDADD = $(libdw) $(libelf)
 next_lines_LDADD = $(libdw) $(libelf)
 get_files_LDADD = $(libdw) $(libelf)
+get_files_define_file_LDADD = $(libdw) $(libelf)
 next_files_LDADD = $(libdw) $(libelf)
 get_aranges_LDADD = $(libdw) $(libelf)
 allfcts_LDADD = $(libdw) $(libelf)
@@ -1885,7 +1941,7 @@ test_elf_cntl_gelf_getshdr_LDADD = $(libelf)
 dwflsyms_LDADD = $(libdw) $(libelf) $(argp_LDADD)
 dwfllines_LDADD = $(libeu) $(libdw) $(libelf) $(argp_LDADD)
 dwfl_report_elf_align_LDADD = $(libeu) $(libdw)
-dwfl_report_offline_memory_LDADD = $(libeu) $(libdw)
+dwfl_report_offline_memory_LDADD = $(libeu) $(libdw) $(libelf)
 dwfl_report_segment_contiguous_LDADD = $(libdw) $(libebl) $(libelf)
 varlocs_LDADD = $(libeu) $(libdw) $(libelf) $(argp_LDADD)
 backtrace_LDADD = $(libeu) $(libdw) $(libelf) $(argp_LDADD)
@@ -1908,6 +1964,7 @@ vdsosyms_LDADD = $(libeu) $(libdw) $(libelf)
 getsrc_die_LDADD = $(libeu) $(libdw) $(libelf)
 strptr_LDADD = $(libelf)
 newdata_LDADD = $(libelf)
+newzdata_LDADD = $(libelf)
 elfstrtab_LDADD = $(libelf)
 dwfl_proc_attach_LDADD = $(libeu) $(libdw)
 dwfl_proc_attach_LDFLAGS = -pthread -rdynamic $(AM_LDFLAGS)
@@ -2272,6 +2329,10 @@ funcretval_test++11$(EXEEXT): $(funcretval_test__11_OBJECTS) $(funcretval_test__
 	@rm -f funcretval_test++11$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(funcretval_test__11_OBJECTS) $(funcretval_test__11_LDADD) $(LIBS)
 
+funcretval_test_struct$(EXEEXT): $(funcretval_test_struct_OBJECTS) $(funcretval_test_struct_DEPENDENCIES) $(EXTRA_funcretval_test_struct_DEPENDENCIES) 
+	@rm -f funcretval_test_struct$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(funcretval_test_struct_OBJECTS) $(funcretval_test_struct_LDADD) $(LIBS)
+
 funcscopes$(EXEEXT): $(funcscopes_OBJECTS) $(funcscopes_DEPENDENCIES) $(EXTRA_funcscopes_DEPENDENCIES) 
 	@rm -f funcscopes$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(funcscopes_OBJECTS) $(funcscopes_LDADD) $(LIBS)
@@ -2283,6 +2344,10 @@ get-aranges$(EXEEXT): $(get_aranges_OBJECTS) $(get_aranges_DEPENDENCIES) $(EXTRA
 get-files$(EXEEXT): $(get_files_OBJECTS) $(get_files_DEPENDENCIES) $(EXTRA_get_files_DEPENDENCIES) 
 	@rm -f get-files$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(get_files_OBJECTS) $(get_files_LDADD) $(LIBS)
+
+get-files-define-file$(EXEEXT): $(get_files_define_file_OBJECTS) $(get_files_define_file_DEPENDENCIES) $(EXTRA_get_files_define_file_DEPENDENCIES) 
+	@rm -f get-files-define-file$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(get_files_define_file_OBJECTS) $(get_files_define_file_LDADD) $(LIBS)
 
 get-lines$(EXEEXT): $(get_lines_OBJECTS) $(get_lines_DEPENDENCIES) $(EXTRA_get_lines_DEPENDENCIES) 
 	@rm -f get-lines$(EXEEXT)
@@ -2339,6 +2404,10 @@ newfile$(EXEEXT): $(newfile_OBJECTS) $(newfile_DEPENDENCIES) $(EXTRA_newfile_DEP
 newscn$(EXEEXT): $(newscn_OBJECTS) $(newscn_DEPENDENCIES) $(EXTRA_newscn_DEPENDENCIES) 
 	@rm -f newscn$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(newscn_OBJECTS) $(newscn_LDADD) $(LIBS)
+
+newzdata$(EXEEXT): $(newzdata_OBJECTS) $(newzdata_DEPENDENCIES) $(EXTRA_newzdata_DEPENDENCIES) 
+	@rm -f newzdata$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(newzdata_OBJECTS) $(newzdata_LDADD) $(LIBS)
 
 next-files$(EXEEXT): $(next_files_OBJECTS) $(next_files_DEPENDENCIES) $(EXTRA_next_files_DEPENDENCIES) 
 	@rm -f next-files$(EXEEXT)
@@ -2541,8 +2610,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/find-prologues.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/funcretval.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/funcretval_test++11.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/funcretval_test_struct.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/funcscopes.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/get-aranges.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/get-files-define-file.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/get-files.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/get-lines.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/get-pubnames.Po@am__quote@ # am--include-marker
@@ -2558,6 +2629,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/newdata.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/newfile.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/newscn.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/newzdata.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/next-files.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/next-lines.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/next_cfi.Po@am__quote@ # am--include-marker
@@ -3399,13 +3471,6 @@ run-readelf-info-plus.sh.log: run-readelf-info-plus.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-run-srcfiles-self.sh.log: run-srcfiles-self.sh
-	@p='run-srcfiles-self.sh'; \
-	b='run-srcfiles-self.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 run-readelf-compressed.sh.log: run-readelf-compressed.sh
 	@p='run-readelf-compressed.sh'; \
 	b='run-readelf-compressed.sh'; \
@@ -3826,6 +3891,13 @@ run-addr2line-alt-debugpath.sh.log: run-addr2line-alt-debugpath.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-funcretval-struct.sh.log: run-funcretval-struct.sh
+	@p='run-funcretval-struct.sh'; \
+	b='run-funcretval-struct.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 run-varlocs.sh.log: run-varlocs.sh
 	@p='run-varlocs.sh'; \
 	b='run-varlocs.sh'; \
@@ -4130,6 +4202,13 @@ run-strptr.sh.log: run-strptr.sh
 newdata.log: newdata$(EXEEXT)
 	@p='newdata$(EXEEXT)'; \
 	b='newdata'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+newzdata.log: newzdata$(EXEEXT)
+	@p='newzdata$(EXEEXT)'; \
+	b='newzdata'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -4610,6 +4689,13 @@ run-declfiles.sh.log: run-declfiles.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-sysroot.sh.log: run-sysroot.sh
+	@p='run-sysroot.sh'; \
+	b='run-sysroot.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 run-readelf-s.sh.log: run-readelf-s.sh
 	@p='run-readelf-s.sh'; \
 	b='run-readelf-s.sh'; \
@@ -4624,9 +4710,23 @@ run-dwflsyms.sh.log: run-dwflsyms.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-debuginfod-seekable.sh.log: run-debuginfod-seekable.sh
+	@p='run-debuginfod-seekable.sh'; \
+	b='run-debuginfod-seekable.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 run-readelf-compressed-zstd.sh.log: run-readelf-compressed-zstd.sh
 	@p='run-readelf-compressed-zstd.sh'; \
 	b='run-readelf-compressed-zstd.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-srcfiles-self.sh.log: run-srcfiles-self.sh
+	@p='run-srcfiles-self.sh'; \
+	b='run-srcfiles-self.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -4813,6 +4913,27 @@ run-debuginfod-IXr.sh.log: run-debuginfod-IXr.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-debuginfod-client-profile.sh.log: run-debuginfod-client-profile.sh
+	@p='run-debuginfod-client-profile.sh'; \
+	b='run-debuginfod-client-profile.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-debuginfod-find-metadata.sh.log: run-debuginfod-find-metadata.sh
+	@p='run-debuginfod-find-metadata.sh'; \
+	b='run-debuginfod-find-metadata.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-debuginfod-longsource.sh.log: run-debuginfod-longsource.sh
+	@p='run-debuginfod-longsource.sh'; \
+	b='run-debuginfod-longsource.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 run-debuginfod-federation-metrics.sh.log: run-debuginfod-federation-metrics.sh
 	@p='run-debuginfod-federation-metrics.sh'; \
 	b='run-debuginfod-federation-metrics.sh'; \
@@ -4820,9 +4941,23 @@ run-debuginfod-federation-metrics.sh.log: run-debuginfod-federation-metrics.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-debuginfod-ima-verification.sh.log: run-debuginfod-ima-verification.sh
+	@p='run-debuginfod-ima-verification.sh'; \
+	b='run-debuginfod-ima-verification.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 run-funcretval++11.sh.log: run-funcretval++11.sh
 	@p='run-funcretval++11.sh'; \
 	b='run-funcretval++11.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-funcretval-struct-native.sh.log: run-funcretval-struct-native.sh
+	@p='run-funcretval-struct-native.sh'; \
+	b='run-funcretval-struct-native.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -4994,8 +5129,10 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/find-prologues.Po
 	-rm -f ./$(DEPDIR)/funcretval.Po
 	-rm -f ./$(DEPDIR)/funcretval_test++11.Po
+	-rm -f ./$(DEPDIR)/funcretval_test_struct.Po
 	-rm -f ./$(DEPDIR)/funcscopes.Po
 	-rm -f ./$(DEPDIR)/get-aranges.Po
+	-rm -f ./$(DEPDIR)/get-files-define-file.Po
 	-rm -f ./$(DEPDIR)/get-files.Po
 	-rm -f ./$(DEPDIR)/get-lines.Po
 	-rm -f ./$(DEPDIR)/get-pubnames.Po
@@ -5011,6 +5148,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/newdata.Po
 	-rm -f ./$(DEPDIR)/newfile.Po
 	-rm -f ./$(DEPDIR)/newscn.Po
+	-rm -f ./$(DEPDIR)/newzdata.Po
 	-rm -f ./$(DEPDIR)/next-files.Po
 	-rm -f ./$(DEPDIR)/next-lines.Po
 	-rm -f ./$(DEPDIR)/next_cfi.Po
@@ -5159,8 +5297,10 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/find-prologues.Po
 	-rm -f ./$(DEPDIR)/funcretval.Po
 	-rm -f ./$(DEPDIR)/funcretval_test++11.Po
+	-rm -f ./$(DEPDIR)/funcretval_test_struct.Po
 	-rm -f ./$(DEPDIR)/funcscopes.Po
 	-rm -f ./$(DEPDIR)/get-aranges.Po
+	-rm -f ./$(DEPDIR)/get-files-define-file.Po
 	-rm -f ./$(DEPDIR)/get-files.Po
 	-rm -f ./$(DEPDIR)/get-lines.Po
 	-rm -f ./$(DEPDIR)/get-pubnames.Po
@@ -5176,6 +5316,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/newdata.Po
 	-rm -f ./$(DEPDIR)/newfile.Po
 	-rm -f ./$(DEPDIR)/newscn.Po
+	-rm -f ./$(DEPDIR)/newzdata.Po
 	-rm -f ./$(DEPDIR)/next-files.Po
 	-rm -f ./$(DEPDIR)/next-lines.Po
 	-rm -f ./$(DEPDIR)/next_cfi.Po
@@ -5282,7 +5423,7 @@ installcheck-local:
 		TESTS_ENVIRONMENT="$(installed_TESTS_ENVIRONMENT)" \
 		LOG_COMPILER="$(installed_LOG_COMPILER)" check-TESTS
 libelf.h: $(top_srcdir)/libelf/libelf.h
-	cp $< $@
+	ln -s $< $@
 
 @GCOV_TRUE@check: check-am coverage
 @GCOV_TRUE@.PHONY: coverage

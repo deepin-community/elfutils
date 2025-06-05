@@ -12,6 +12,9 @@
 /* Build debuginfod */
 #undef ENABLE_DEBUGINFOD
 
+/* Build IMA verification */
+#undef ENABLE_IMA_VERIFICATION
+
 /* Enable libdebuginfod */
 #undef ENABLE_LIBDEBUGINFOD
 
@@ -85,8 +88,14 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 0 if libarchive is not available */
+/* Define to 1 if libarchive is available */
 #undef HAVE_LIBARCHIVE
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the `malloc_trim' function. */
+#undef HAVE_MALLOC_TRIM
 
 /* Define to 1 if you have the `mremap' function. */
 #undef HAVE_MREMAP
@@ -123,6 +132,14 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
+
+/* Define to 1 if `sysprof-4/sysprof-capture-types.h` is provided by the
+   system, 0 otherwise. */
+#undef HAVE_SYSPROF_4_HEADERS
+
+/* Define to 1 if `sysprof-6/sysprof-capture-types.h` is provided by the
+   system, 0 otherwise. */
+#undef HAVE_SYSPROF_6_HEADERS
 
 /* Define to 1 if you have the <sys/resource.h> header file. */
 #undef HAVE_SYS_RESOURCE_H

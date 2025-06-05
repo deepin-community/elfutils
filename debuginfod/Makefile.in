@@ -140,17 +140,22 @@ am__DEPENDENCIES_1 =
 @BUILD_STATIC_TRUE@	$(libebl)
 @BUILD_STATIC_FALSE@am__DEPENDENCIES_4 = ./libdebuginfod.so
 @BUILD_STATIC_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@am__DEPENDENCIES_4 = ./libdebuginfod.a \
+@BUILD_STATIC_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	$(am__DEPENDENCIES_1) \
+@BUILD_STATIC_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	$(am__DEPENDENCIES_1) \
 @BUILD_STATIC_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@	$(am__DEPENDENCIES_1)
 @BUILD_STATIC_TRUE@@DUMMY_LIBDEBUGINFOD_TRUE@am__DEPENDENCIES_4 = ./libdebuginfod.a
 debuginfod_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_2) \
 	$(libeu) $(am__DEPENDENCIES_4) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_debuginfod_find_OBJECTS = debuginfod-find.$(OBJEXT)
 debuginfod_find_OBJECTS = $(am_debuginfod_find_OBJECTS)
 debuginfod_find_DEPENDENCIES = $(am__DEPENDENCIES_3) \
 	$(am__DEPENDENCIES_2) $(libeu) $(am__DEPENDENCIES_4) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -275,6 +280,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DEBUGINFOD_IMA_CERT_PATH = @DEBUGINFOD_IMA_CERT_PATH@
 DEBUGINFOD_URLS = @DEBUGINFOD_URLS@
 DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DLOCALEDIR='"${localedir}"'
@@ -376,6 +382,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+crypto_LIBS = @crypto_LIBS@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -395,6 +402,8 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+jsonc_CFLAGS = @jsonc_CFLAGS@
+jsonc_LIBS = @jsonc_LIBS@
 libarchive_CFLAGS = @libarchive_CFLAGS@
 libarchive_LIBS = @libarchive_LIBS@
 libcurl_CFLAGS = @libcurl_CFLAGS@
@@ -407,6 +416,7 @@ localedir = @localedir@
 localedir_c = @localedir_c@
 localedir_c_make = @localedir_c_make@
 localstatedir = @localstatedir@
+lzma_LIBS = @lzma_LIBS@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 obstack_LIBS = @obstack_LIBS@
@@ -417,6 +427,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = s,x,x,
 psdir = @psdir@
+rpm_LIBS = @rpm_LIBS@
 runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
@@ -430,11 +441,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zip_LIBS = @zip_LIBS@
 zstd_LIBS = @zstd_LIBS@
-AM_CPPFLAGS = -I. -I$(srcdir) -I$(top_srcdir)/lib -I.. -I$(srcdir) \
-	-I$(srcdir)/../libelf -I$(srcdir)/../libebl \
+AM_CPPFLAGS = -iquote . -I$(srcdir) -I$(top_srcdir)/lib -I.. \
+	-I$(srcdir) -I$(srcdir)/../libelf -I$(srcdir)/../libebl \
 	-I$(srcdir)/../libdw -I$(srcdir)/../libdwelf \
 	$(libmicrohttpd_CFLAGS) $(libcurl_CFLAGS) $(sqlite3_CFLAGS) \
-	$(libarchive_CFLAGS) $(am__append_4)
+	$(libarchive_CFLAGS) $(jsonc_CFLAGS) $(am__append_4)
 
 # Drop the 'u' flag that automake adds by default. It is incompatible
 # with deterministic archives.
@@ -503,15 +514,15 @@ program_prefix =
 @BUILD_STATIC_FALSE@libelf = ../libelf/libelf.so
 @BUILD_STATIC_TRUE@libelf = ../libelf/libelf.a -lz
 @BUILD_STATIC_FALSE@libdebuginfod = ./libdebuginfod.so
-@BUILD_STATIC_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@libdebuginfod = ./libdebuginfod.a -lpthread $(libcurl_LIBS)
+@BUILD_STATIC_TRUE@@DUMMY_LIBDEBUGINFOD_FALSE@libdebuginfod = ./libdebuginfod.a -lpthread $(libcurl_LIBS) $(crypto_LIBS) $(jsonc_LIBS)
 @BUILD_STATIC_TRUE@@DUMMY_LIBDEBUGINFOD_TRUE@libdebuginfod = ./libdebuginfod.a
 libebl = ../libebl/libebl.a
 libeu = ../lib/libeu.a
 AM_LDFLAGS = -Wl,-rpath-link,../libelf:../libdw:.
 debuginfod_SOURCES = debuginfod.cxx
-debuginfod_LDADD = $(libdw) $(libelf) $(libeu) $(libdebuginfod) $(argp_LDADD) $(fts_LIBS) $(libmicrohttpd_LIBS) $(sqlite3_LIBS) $(libarchive_LIBS) -lpthread -ldl
+debuginfod_LDADD = $(libdw) $(libelf) $(libeu) $(libdebuginfod) $(argp_LDADD) $(fts_LIBS) $(libmicrohttpd_LIBS) $(sqlite3_LIBS) $(libarchive_LIBS) $(rpm_LIBS) $(jsonc_LIBS) $(libcurl_LIBS) $(lzma_LIBS) -lpthread -ldl
 debuginfod_find_SOURCES = debuginfod-find.c
-debuginfod_find_LDADD = $(libdw) $(libelf) $(libeu) $(libdebuginfod) $(argp_LDADD) $(fts_LIBS)
+debuginfod_find_LDADD = $(libdw) $(libelf) $(libeu) $(libdebuginfod) $(argp_LDADD) $(fts_LIBS) $(jsonc_LIBS)
 @LIBDEBUGINFOD_TRUE@noinst_LIBRARIES = libdebuginfod.a \
 @LIBDEBUGINFOD_TRUE@	libdebuginfod_pic.a
 libdebuginfod_a_SOURCES = debuginfod-client.c
@@ -519,7 +530,7 @@ libdebuginfod_pic_a_SOURCES = debuginfod-client.c
 am_libdebuginfod_pic_a_OBJECTS = $(libdebuginfod_a_SOURCES:.c=.os)
 @LIBDEBUGINFOD_TRUE@pkginclude_HEADERS = debuginfod.h
 @LIBDEBUGINFOD_TRUE@libdebuginfod_so_LIBS = libdebuginfod_pic.a
-@DUMMY_LIBDEBUGINFOD_FALSE@@LIBDEBUGINFOD_TRUE@libdebuginfod_so_LDLIBS = -lpthread $(libcurl_LIBS) $(fts_LIBS) $(libelf)
+@DUMMY_LIBDEBUGINFOD_FALSE@@LIBDEBUGINFOD_TRUE@libdebuginfod_so_LDLIBS = -lpthread $(libcurl_LIBS) $(fts_LIBS) $(libelf) $(crypto_LIBS) $(jsonc_LIBS)
 @DUMMY_LIBDEBUGINFOD_TRUE@@LIBDEBUGINFOD_TRUE@libdebuginfod_so_LDLIBS = 
 EXTRA_DIST = libdebuginfod.map
 MOSTLYCLEANFILES = $(am_libdebuginfod_pic_a_OBJECTS) $(LIBDEBUGINFOD_SONAME)
@@ -934,7 +945,6 @@ print-%:
 @LIBDEBUGINFOD_TRUE@		$(DESTDIR)$(libdir)/libdebuginfod-$(PACKAGE_VERSION).so
 @LIBDEBUGINFOD_TRUE@	ln -fs libdebuginfod-$(PACKAGE_VERSION).so $(DESTDIR)$(libdir)/$(LIBDEBUGINFOD_SONAME)
 @LIBDEBUGINFOD_TRUE@	ln -fs libdebuginfod-$(PACKAGE_VERSION).so $(DESTDIR)$(libdir)/libdebuginfod.so
-
 @LIBDEBUGINFOD_TRUE@uninstall: uninstall-am
 @LIBDEBUGINFOD_TRUE@	rm -f $(DESTDIR)$(libdir)/libdebuginfod-$(PACKAGE_VERSION).so
 @LIBDEBUGINFOD_TRUE@	rm -f $(DESTDIR)$(libdir)/$(LIBDEBUGINFOD_SONAME)
