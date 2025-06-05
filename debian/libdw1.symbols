@@ -1,4 +1,4 @@
-libdw.so.1 libdw1t64 #MINVER#
+libdw.so.1 libdw1 #MINVER#
  *@ELFUTILS_0.122 0.126
  *@ELFUTILS_0.126 0.126
  *@ELFUTILS_0.127 0.127
