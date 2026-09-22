@@ -1,3 +1,11 @@
+elfutils (0.191-1deepin4) unstable; urgency=medium
+
+  * debuginfod: Use debuginfod.deepin.com for UOS.
+    UOS does not have a debuginfod server. Use deepin's debuginfod instead
+    as fallback.
+
+ -- Tianyu Chen <sweetyfish@deepin.org>  Tue, 22 Sep 2026 15:12:26 +0800
+
 elfutils (0.191-1deepin3) unstable; urgency=medium
 
   * feat: add sw64 support.
