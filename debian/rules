@@ -59,12 +59,9 @@ else
   else ifeq ($(DISTRO),Ubuntu)
     conf_debuginfod += \
 	--enable-debuginfod-urls="https://debuginfod.ubuntu.com"
-  else ifeq ($(DISTRO),Deepin) 
+  else ifneq (,$(or $(findstring Deepin,$(DISTRO)),$(findstring Uos,$(DISTRO))))
     conf_debuginfod += \
 	--enable-debuginfod-urls="https://debuginfod.deepin.com"
-  else ifeq ($(DISTRO),uos)
-    conf_debuginfod += \
-	--enable-debuginfod-urls="https://debuginfod.chinauos.com"
   endif
 endif
 
